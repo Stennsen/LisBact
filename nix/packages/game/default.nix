@@ -116,9 +116,9 @@
         run = {
           type = "app";
           # On non-NixOS hosts the nix-built love binary cannot see the system
-          # GPU drivers; expose them the same way nix/shell.nix does.
+          # GPU drivers; use nixpkgs' Mesa, see nix/gpu-env.nix.
           program = "${pkgs.writeShellScript "yeti-run" ''
-            source ${../../gpu-host-env.sh}
+            ${import ../../gpu-env.nix pkgs}
             exec ${pkgs.love}/bin/love ${gameSrc} "$@"
           ''}";
         };

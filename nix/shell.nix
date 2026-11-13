@@ -14,6 +14,7 @@
 
         self'.packages.fennel-ls
         fnlfmt
+        lua-language-server
 
         libglvnd
         wayland
@@ -28,11 +29,7 @@
         # loader and crash ("GLIBC_2.xx not found" / segfaults). Nix-built
         # binaries resolve their own libc via interpreter + rpath.
         LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath packages;
-        # On non-NixOS hosts, additionally expose the host's GPU vendor libs
-        # (never the host lib dir itself — see gpu-host-env.sh).
-        shellHook = ''
-          source ${./gpu-host-env.sh}
-        '';
+        shellHook = import ./gpu-env.nix pkgs;
       };
     };
 }
