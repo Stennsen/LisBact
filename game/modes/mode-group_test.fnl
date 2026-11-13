@@ -2,11 +2,18 @@
 
 (import-macros {: incf} :sample-macros)
 
-(local countdown-time 300)
+(local group_width 100)
+(local group_height 100)
 
 (local groups [
-    {"x" 100 "y" 100 "width" 10 "height" 10}
+    {"name" :group-1 "x" 100 "y" 100 "width" group_width "height" group_height "color" [0.8 0.5 0.8 1.0] }
+    {"name" :group-2 "x" 200 "y" 100 "width" group_width "height" group_height "color" [0.8 0.8 0.5 1.0] }
+    {"name" :group-3 "x" 300 "y" 100 "width" group_width "height" group_height "color" [0.5 0.8 0.8 1.0] }
 ])
+
+;; TODO: Add function to check, if for a given (x, y) of mouse pointer it collides with group
+;; TOOD: Replace group with a convex polygon. :)
+;; TODO: Draw group
 
 {:activate (fn _activate []
              ;; only called called once. Useful for loading in large assets
@@ -16,18 +23,16 @@
  :leave (fn _leave [state] state)
  :draw (fn _draw [state]
          (let [[w h] [(love.window.getMode)]]
-           (love.graphics.printf (: "This window close in %0.1f seconds"
-                                    :format (math.max 0 (- countdown-time state.time)))
-                                 0 (- (/ h 2) 15) w :center)
             (each [index value (ipairs groups)]
-                (love.graphics.rectangle :fill value.x value.y value.width value.height))
-            ))
- :update (fn _update [state dt _set-mode]
-            (local new-time (+ state.time dt))
-            (if (< countdown-time new-time) 
-              (do (love.event.quit) { :time 0 }) { :time new-time }))
+                (love.graphics.setColor value.color )
+                (love.graphics.rectangle :fill value.x value.y value.width value.height)
+                
+            )
+        ))
+ :update (fn _update [state dt _set-mode] state)
  :keyreleased (fn _keyreleased [state _key _code _is-repeat _set-mode] state)
  :keypressed (fn _keypressed [state _key _code _is-repeat _set-mode] state)
- :mousemoved (lambda [state _x _y _dx _dy _set-mode] state)
+ :mousemoved (lambda [state _x _y _dx _dy _set-mode] 
+                (print _x _y) state)
  :mousepressed (lambda [state _key _scancode _is-repeat _set-mode] state)
  :mousereleased (lambda [state _key _scancode _is-repeat _set-mode] state) }
