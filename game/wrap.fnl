@@ -15,16 +15,30 @@
 
 (fn set-state [new-state] (set state-state new-state))
 
+(fn mode-name [mn] (.. :modes. mn))
+
 (fn set-mode [new-mode-name ...]
   (print new-mode-name)
   (if state-mode (set-state ((. state-mode :leave) state-state)))
-  (let [mode (require (.. :modes. new-mode-name))]
+  (let [mode (require (mode-name new-mode-name))]
     (when (not (. activated-modes mode))
       (mode.activate)
       (tset activated-modes mode true))
     (set-state ((. mode :enter) state-state))
     (set state-mode mode)
     (set state-mode-name new-mode-name)))
+
+(fn reload-mode! [mode]
+  (let [mn (mode-name mode) old (require mn)
+        _ (tset package.loaded mn nil)
+        new (require mn)]
+    (when (= (type new) :table)
+      (each [k v (pairs new)]
+        (tset old k v))
+      (each [k _v (pairs old)]
+        (when (not (. new k))
+          (tset old k nil)))
+      (tset package.loaded mn old))))
 
 (fn love.load [_args]
   (set-mode :mode-intro)
@@ -44,7 +58,9 @@
 (fn love.update [dt]
   (set-state (state-mode.update state-state dt set-mode)))
 
-(fn love.keyreleased [key code isrepeat] (set-state (state-mode.keyreleased state-state key code isrepeat set-mode)))
+(fn love.keyreleased [key code isrepeat] 
+  (if (and (love.keyboard.isDown "lctrl" "rctrl") (= key "r")) (reload-mode! state-mode-name))
+  (set-state (state-mode.keyreleased state-state key code isrepeat set-mode)))
 
 (fn love.keypressed [key code isrepeat] (set-state (state-mode.keypressed state-state key code isrepeat set-mode)))
 

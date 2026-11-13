@@ -12,7 +12,7 @@
  :leave (fn _leave [state] state)
  :draw (fn _draw [state]
          (let [[w h] [(love.window.getMode)]]
-           (love.graphics.printf (: "This window should close in %0.1f seconds"
+           (love.graphics.printf (: "This window close in %0.1f seconds"
                                     :format (math.max 0 (- countdown-time state.time)))
                                  0 (- (/ h 2) 15) w :center)))
  :update (fn _update [state dt _set-mode]
