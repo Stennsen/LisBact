@@ -1,0 +1,1 @@
+this is based on the [alexjgriffith/min-love2d-fennel](https://codeberg.org/alexjgriffith/min-love2d-fennel) template and adapted to a more nix-like workflow and personal preferences

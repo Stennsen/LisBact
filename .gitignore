@@ -1,0 +1,12 @@
+### Direnv
+.direnv
+
+### nix
+result
+result*
+
+### love.js runtime is fetched pinned via fetchurl (nix/packages/game), not vendored
+*.wasm
+
+### vscode
+.vscode
