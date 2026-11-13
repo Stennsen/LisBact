@@ -5,25 +5,26 @@
 
 (local scale 1)
 
-;; set the first mode
-;; storing the mode and mode-name in state lets you reload this
-;; module with ,reload wrap
+(var state-mode nil)
+(var state-mode-name :mode-intro)
+
 (local state (require :state))
+(var state-state (state.init))
 
 (local activated-modes {})
 
+(fn set-state [new-state] (set state-state new-state))
+
 (fn set-mode [new-mode-name ...]
-  (case (and (. state.mode :leave) (pcall (. state.mode :leave)))
-    (false msg) (print state.mode-name "leave error" msg))
+  (print new-mode-name)
+  (if state-mode (set-state ((. state-mode :leave) state-state)))
   (let [mode (require new-mode-name)]
-    (when (and mode.activate (not (. activated-modes mode)))
-      (case (pcall mode.activate ...)
-        (false msg) (print new-mode-name "activate error" msg)
-        _ (tset activated-modes mode true)))
-    (case (and mode.enter (pcall mode.enter ...))
-      (false msg) (print new-mode-name "enter error" msg))
-    (set state.mode mode)
-    (set state.mode-name new-mode-name)))
+    (when (not (. activated-modes mode))
+      (mode.activate)
+      (tset activated-modes mode true))
+    (set-state ((. mode :enter) state-state))
+    (set state-mode mode)
+    (set state-mode-name new-mode-name)))
 
 (fn love.load [_args]
   (set-mode :mode-intro)
@@ -34,25 +35,18 @@
   (when (~= :Web (love.system.getOS)) (repl.start)))
 
 (fn safely [f]
-  (xpcall f #(set-mode :error-mode state.mode-name $ (fennel.traceback))))
+  (xpcall f (lambda [d] (print d))))
 
 (fn love.draw []
   (love.graphics.scale scale)
-  (safely state.mode.draw))
+  (safely (lambda [] (state-mode.draw state-state))))
 
 ;; you can wrap other love callbacks, such as love.mousepressed
 ;; love.mousemoved, love.mousereleased, love.keypressed in a similar
 ;; way to love.update.
 (fn love.update [dt]
-  ;; put global updates here
-  (when state.mode.update
-    ;; passing in set-mode to update restricts when you can switch modes
-    (safely #(state.mode.update dt set-mode))))
+  (set-state (state-mode.update state-state dt set-mode)))
 
-(fn love.keyreleased [key code isrepeat]
-  ;; put global keyrelease actions you want here
-  (if (and (love.keyboard.isDown "lctrl" "rctrl" "capslock") (= key "q"))
-      (love.event.quit)
-      ;; add what each keypress should do in each mode
-      (not isrepeat)
-      (safely #(state.mode.keyreleased key code set-mode))))
+(fn love.keyreleased [key code isrepeat] (print "KEY RELEASED"))
+
+(set-mode :mode-intro)
