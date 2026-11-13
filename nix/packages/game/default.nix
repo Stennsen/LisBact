@@ -115,7 +115,20 @@
         # re-evaluated on each run, so edits in game/ are picked up
         run = {
           type = "app";
-          program = "${pkgs.writeShellScript "yeti-run" ''exec ${pkgs.love}/bin/love ${gameSrc} "$@"''}";
+          # On non-NixOS hosts the nix-built love binary cannot see the system
+          # GPU drivers; expose them the same way nix/shell.nix does (host
+          # dirs last, nix glvnd first, glvnd vendor configs from the host).
+          program = "${pkgs.writeShellScript "yeti-run" ''
+            if [[ "$(uname -s)" == "Linux" && ! -e /etc/NIXOS ]]; then
+              hostDirs=""
+              for d in /usr/lib/*-linux-gnu /usr/lib64 /usr/lib; do
+                [[ -d "$d" ]] && hostDirs="$hostDirs:$d"
+              done
+              [[ -n "$hostDirs" ]] && export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.libglvnd ]}$hostDirs''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+              export __EGL_VENDOR_LIBRARY_DIRS="/usr/share/glvnd/egl_vendor.d:/etc/glvnd/egl_vendor.d''${__EGL_VENDOR_LIBRARY_DIRS:+:$__EGL_VENDOR_LIBRARY_DIRS}"
+            fi
+            exec ${pkgs.love}/bin/love ${gameSrc} "$@"
+          ''}";
         };
         # nix run .#serve-web -- serve the web build on http://localhost:8000
         # (custom port: nix run .#serve-web -- 8080); serve.py sets the

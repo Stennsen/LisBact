@@ -23,7 +23,7 @@
                                     (unpack state.version))
                                  0 10 w :center)
            (love.graphics.printf (: "This window should close in %0.1f seconds"
-                                    :format (math.max 0 (- countdown-time 0)))
+                                    :format (math.max 0 (- countdown-time state.time)))
                                  0 (- (/ h 2) 15) w :center)))
  :update (fn _update [dt _set-mode]
            (if (< state.counter 65535)
