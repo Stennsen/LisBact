@@ -19,7 +19,7 @@
           libglvnd
           wayland
         ];
-        LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath pkgs.glibc}:/run/current-system/sw/lib:/usr/lib64:/usr/lib:${pkgs.lib.makeLibraryPath packages}";
+        LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath [pkgs.glibc]}:/run/current-system/sw/lib:/usr/lib64:/usr/lib:${pkgs.lib.makeLibraryPath packages}";
       };
     };
 }
