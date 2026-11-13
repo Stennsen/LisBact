@@ -18,7 +18,7 @@
 (fn set-mode [new-mode-name ...]
   (print new-mode-name)
   (if state-mode (set-state ((. state-mode :leave) state-state)))
-  (let [mode (require new-mode-name)]
+  (let [mode (require (.. :modes. new-mode-name))]
     (when (not (. activated-modes mode))
       (mode.activate)
       (tset activated-modes mode true))
@@ -34,12 +34,9 @@
   (love.graphics.setDefaultFilter "nearest" "nearest")
   (when (~= :Web (love.system.getOS)) (repl.start)))
 
-(fn safely [f]
-  (xpcall f (lambda [d] (print d))))
-
 (fn love.draw []
   (love.graphics.scale scale)
-  (safely (lambda [] (state-mode.draw state-state))))
+  (state-mode.draw state-state))
 
 ;; you can wrap other love callbacks, such as love.mousepressed
 ;; love.mousemoved, love.mousereleased, love.keypressed in a similar
@@ -47,6 +44,14 @@
 (fn love.update [dt]
   (set-state (state-mode.update state-state dt set-mode)))
 
-(fn love.keyreleased [key code isrepeat] (print "KEY RELEASED"))
+(fn love.keyreleased [key code isrepeat] (set-state (state-mode.keyreleased state-state key code isrepeat set-mode)))
+
+(fn love.keypressed [key code isrepeat] (set-state (state-mode.keypressed state-state key code isrepeat set-mode)))
+
+(fn love.mousemoved [x y dx dy _is-touch] (set-state (state-mode.mousemoved state-state x y dx dy set-mode)))
+
+(fn love.mousepressed [key scancode isrepeat] (set-state (state-mode.mousepressed state-state key scancode isrepeat set-mode)))
+
+(fn love.mousereleased [key scancode isrepeat] (set-state (state-mode.mousereleased state-state key scancode isrepeat set-mode)))
 
 (set-mode :mode-intro)
