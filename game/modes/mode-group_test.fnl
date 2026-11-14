@@ -18,7 +18,7 @@
         p5 [(- width tenth_w) (- height tenth_h)]
         p6 [width (/ height 2)]
         p7 [(- width tenth_w) tenth_h]
-        p8 [(/ width 2) height]
+        p8 [(/ width 2) 0]
         p [p1 p2 p3 p4 p5 p6 p7 p8]
         points []
         ]
@@ -29,6 +29,16 @@
             )
         )
         points
+    )
+)
+
+(fn offset_pol [pol offset_x offset_y]
+    (let [new_p []]
+    (for [i 1 (length pol) 2]
+        (table.insert new_p (+ offset_x (. pol i)))
+        (table.insert new_p (+ offset_y (. pol (+ i 1))))
+    )
+    new_p
     )
 )
 
@@ -56,7 +66,7 @@
          (let [[w h] [(love.window.getMode)]]
             (each [index value (ipairs groups)]
                 (love.graphics.setColor value.color )
-                (love.graphics.polygon :fill (unpack value.shape))
+                (love.graphics.polygon :fill (unpack (offset_pol value.shape value.x value.y)))
                 
             )
         ))
