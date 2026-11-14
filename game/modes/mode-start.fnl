@@ -24,7 +24,7 @@
  :draw (fn _draw [state]
          (let [[w h] [(love.window.getMode)]]
            (love.graphics.setFont big-font)
-           (love.graphics.print "Klammer Schwarm" (+ 200 title-offset-x) 150)
+           (love.graphics.print "(Klammer Schwarm)" (+ 200 title-offset-x) 150)
            (love.graphics.setFont small-font)
            (love.graphics.print "Pressy SPACE to start!" 200 250)))
  :update (fn _update [state dt _set-mode]
