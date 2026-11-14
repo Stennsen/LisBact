@@ -21,7 +21,7 @@
 
 (fn generate_rect_pol [width height]
     (let [
-        tenth_w (* width 0.1) 
+        tenth_w (* width 0.1)
         tenth_h (* height 0.1)
         p1 [tenth_w tenth_h]
         p2 [0.0 (/ height 2)]
@@ -44,7 +44,7 @@
     )
 )
 
-(fn generate_outline [pol] 
+(fn generate_outline [pol]
     (let [new_pol [(unpack pol)]]
     (table.insert new_pol (. pol 1))
     (table.insert new_pol (. pol 2))
@@ -87,10 +87,10 @@
             (each [index value (ipairs groups)]
                 (love.graphics.setColor value.b_color )
                 (love.graphics.polygon :fill (unpack (offset_pol value.shape value.x value.y)))
-                
+
                 ; (print (unpack ( value.shape)))
                 (love.graphics.setLineJoin :bevel)
-                
+
                 (love.graphics.setColor value.o_color )
                 (love.graphics.setLineWidth 10)
                 (love.graphics.line (unpack (offset_pol (generate_outline value.shape) value.x value.y)))
@@ -103,11 +103,11 @@
  :update (fn _update [state dt _set-mode] state)
  :keyreleased (fn _keyreleased [state _key _code _is-repeat _set-mode] state)
  :keypressed (fn _keypressed [state _key _code _is-repeat _set-mode] state)
- :mousemoved (lambda [state _x _y _dx _dy _set-mode] 
+ :mousemoved (lambda [state _x _y _dx _dy _set-mode]
                 ;; (each [index value (ipairs groups)]
-;; 
-                ;; ) 
+;;
+                ;; )
                 state)
  :mousepressed (lambda [state _key _scancode _is-repeat _set-mode] state)
- :mousereleased (lambda [state _key _scancode _is-repeat _set-mode] state) 
+ :mousereleased (lambda [state _key _scancode _is-repeat _set-mode] state)
  }
