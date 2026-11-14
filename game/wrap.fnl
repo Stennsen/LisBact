@@ -5,7 +5,7 @@
 (local scale 1)
 
 ;; Used for defining start scene
-(local initial-state-mode-name :mode-background_test)
+(local initial-state-mode-name :mode-start)
 
 (var state-mode nil)
 (var state-mode-name initial-state-mode-name)
@@ -107,8 +107,8 @@
 
 (fn love.mousemoved [x y dx dy _is-touch] (set-state (call-mode-with-state :mousemoved x y dx dy set-mode)))
 
-(fn love.mousepressed [key scancode isrepeat] (set-state (call-mode-with-state :mousepressed key scancode isrepeat set-mode)))
+(fn love.mousepressed [x y button is-touch presses] (set-state (call-mode-with-state :mousepressed x y button is-touch presses set-mode)))
 
-(fn love.mousereleased [key scancode isrepeat] (set-state (call-mode-with-state :mousereleased key scancode isrepeat set-mode)))
+(fn love.mousereleased [x y button is-touch presses] (set-state (call-mode-with-state :mousereleased x y button is-touch presses set-mode)))
 
 (set-mode initial-state-mode-name)
