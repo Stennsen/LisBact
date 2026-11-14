@@ -50,11 +50,10 @@
             vec [(- (car target) (car source)) (- (cdr target) (cdr source))]
             len-vec (math.sqrt (+ (* (car vec) (car vec))
                                   (* (cdr vec) (cdr vec))))
-            norm-vec [(/ (car vec) len-vec) (/ (cdr vec) len-vec)]]
-        ; (pprint source)
-        (merge swarm
-               {:x (+ swarm.x (* (car norm-vec) dt speed))
-                :y (+ swarm.y (* (cdr norm-vec) dt speed))}))
+            norm-vec [(/ (car vec) len-vec) (/ (cdr vec) len-vec)]
+            dx (* (car norm-vec) dt speed) 
+            dy (* (cdr norm-vec) dt speed)]
+          (move swarm dx dy))
       swarm))
 
 (fn get-by-id [swarms id]
