@@ -9,15 +9,11 @@
     (setmetatable {: size : x : y} self)))
 
 (fn Swarm.render [self]
-  (love.graphics.circle :line self.x self.y self.size)
-  (love.graphics.print (tostring self.size) self.x self.y))
+  (love.graphics.circle :line self.x self.y self.size))
 
-(fn render [obj]
-  "calls an objects render method"
-  (obj:render))
+(fn Swarm.move [self x-delta y-delta]
+  "recieves a delta for x and y and returns a new Swarm with the updated coordinates"
+  (Swarm:new self.size (+ self.x x-delta) (+ self.y y-delta)))
 
-(fn new [class ...]
-  "calls `Class:new ...` to create instance of an table"
-  (class:new ...))
 
-{: Swarm : render : new}
+{: Swarm }
