@@ -37,7 +37,8 @@
 
 (if (>= radius-2 (+ d-x-2 d-y-2))
 (print "INSIDE")
-; (print "NOT INSIDE"))
+; (print "NOT INSIDE")
+)
 )
 
-{: new : render : move : set-target: check-mouse-in}
+{: new : render : move : set-target : check-mouse-in}
