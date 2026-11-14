@@ -7,6 +7,18 @@
 
 (local selected_group nil)
 
+(local body_colors [
+    [0.8 0.5 0.8 0.2]
+    [0.8 0.8 0.5 0.2]
+    [0.4 0.8 0.8 0.2]
+])
+
+(local outline_colors [
+    [0.8 0.5 0.8 1.0]
+    [0.8 0.8 0.5 1.0]
+    [0.4 0.8 0.8 1.0]
+])
+
 (fn generate_rect_pol [width height]
     (let [
         tenth_w (* width 0.1) 
@@ -32,6 +44,14 @@
     )
 )
 
+(fn generate_outline [pol] 
+    (let [new_pol [(unpack pol)]]
+    (table.insert new_pol (. pol 1))
+    (table.insert new_pol (. pol 2))
+    new_pol
+    )
+)
+
 (fn offset_pol [pol offset_x offset_y]
     (let [new_p []]
     (for [i 1 (length pol) 2]
@@ -44,9 +64,9 @@
 
 (global Group {:__index "Group"})
 (local groups [
-    {"name" :group-1 "x" 100 "y" 100 "shape" (generate_rect_pol group_width group_height) "color" [0.8 0.5 0.8 1.0] "__index" :Group}
-    {"name" :group-2 "x" 200 "y" 100 "shape" (generate_rect_pol group_width group_height) "color" [0.8 0.8 0.5 1.0] "__index" :Group}
-    {"name" :group-3 "x" 300 "y" 100 "shape" (generate_rect_pol group_width group_height) "color" [0.5 0.8 0.8 1.0] "__index" :Group}
+    {"name" :group-1 "x" 100 "y" 100 "shape" (generate_rect_pol group_width group_height) "b_color" (. body_colors 1) "o_color" (. outline_colors 1) "__index" :Group}
+    {"name" :group-2 "x" 200 "y" 100 "shape" (generate_rect_pol group_width group_height) "b_color" (. body_colors 2) "o_color" (. outline_colors 2) "__index" :Group}
+    {"name" :group-3 "x" 300 "y" 100 "shape" (generate_rect_pol group_width group_height) "b_color" (. body_colors 3) "o_color" (. outline_colors 3) "__index" :Group}
 ])
 
 ;; Return boolena if point is in group
@@ -65,8 +85,11 @@
  :draw (fn _draw [state]
          (let [[w h] [(love.window.getMode)]]
             (each [index value (ipairs groups)]
-                (love.graphics.setColor value.color )
+                (love.graphics.setColor value.b_color )
                 (love.graphics.polygon :fill (unpack (offset_pol value.shape value.x value.y)))
+                (love.graphics.setColor value.o_color )
+                ; (print (unpack ( value.shape)))
+                (love.graphics.line (unpack (offset_pol (generate_outline value.shape) value.x value.y)))
                 
             )
         ))
@@ -79,4 +102,5 @@
                 ;; ) 
                 state)
  :mousepressed (lambda [state _key _scancode _is-repeat _set-mode] state)
- :mousereleased (lambda [state _key _scancode _is-repeat _set-mode] state) }
+ :mousereleased (lambda [state _key _scancode _is-repeat _set-mode] state) 
+ }

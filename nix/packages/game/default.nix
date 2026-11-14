@@ -9,14 +9,11 @@
     let
       gameName = "yeti";
       gameVersion = "0.1.0";
-      gameAuthor = "Your Name";
       loveVersion = "11.5"; # must match game/conf.lua t.version
-      canvasWidth = 720; # match game/conf.lua t.window.width
-      canvasHeight = 450; # match game/conf.lua t.window.height
-      canvasColour = "54,69,79";
-      textColour = "240,234,214";
+      webMemory = 67108864; # wasm heap for the love.js runtime, in bytes (64 MiB)
 
-      # only what goes into the .love: top-level .lua/.fnl/.fnlm plus lib/ and assets/
+      # only what goes into the .love: lua/fennel sources in any directory
+      # plus everything in lib/ and assets/; dev-only scripts/ is excluded
       gameSrc = builtins.path {
         path = ../../../game;
         name = "${gameName}-src";
@@ -24,16 +21,19 @@
           path: type:
           let
             rel = pkgs.lib.removePrefix "${toString ../../../game}/" (toString path);
-            topLevel = !(pkgs.lib.hasInfix "/" rel);
           in
           type == "directory"
-          || (topLevel && rel != "flsproject.fnl" && (
-            pkgs.lib.hasSuffix ".lua" rel
-            || pkgs.lib.hasSuffix ".fnl" rel
-            || pkgs.lib.hasSuffix ".fnlm" rel
-          ))
-          || pkgs.lib.hasPrefix "lib/" rel
-          || pkgs.lib.hasPrefix "assets/" rel;
+          || (
+            !(pkgs.lib.hasPrefix "." rel)
+            && !(pkgs.lib.hasPrefix "scripts/" rel)
+            && (
+              pkgs.lib.hasSuffix ".lua" rel
+              || pkgs.lib.hasSuffix ".fnl" rel
+              || pkgs.lib.hasSuffix ".fnlm" rel
+              || pkgs.lib.hasPrefix "lib/" rel
+              || pkgs.lib.hasPrefix "assets/" rel
+            )
+          );
       };
 
       loveFile = pkgs.runCommand "${gameName}-${gameVersion}.love" { nativeBuildInputs = [ pkgs.zip ]; } ''
@@ -41,60 +41,95 @@
         find . -type f | LC_ALL=C sort | env TZ=UTC zip -q -9 -X "$out" -@
       '';
 
-      # prebuilt love.js runtime, fetched from the upstream template with pinned
-      # hashes (the *.wasm files are gitignored, so the flake cannot see them in-repo)
-      loveJsRuntime = {
-        "11.5" = {
-          js = pkgs.fetchurl {
-            url = "https://codeberg.org/alexjgriffith/min-love2d-fennel/raw/branch/master/buildtools/love-js/src/love-11.5/compat/love.js";
-            hash = "sha256-1AHQIjBcCxOj+l9VfpHeo51r5iOhqzeJzrPrvloFtkc=";
-          };
-          wasm = pkgs.fetchurl {
-            url = "https://codeberg.org/alexjgriffith/min-love2d-fennel/raw/branch/master/buildtools/love-js/src/love-11.5/compat/love.wasm";
-            hash = "sha256-qy2ZQ2ySci8+nP6R+thzzoSxCrPM8MZNd0ctMlvqJIg=";
-          };
+      # love.js (https://github.com/Davidobot/love.js) CLI run under node to
+      # render the web template and crunch the .love into game.data; its npm
+      # dependencies are pinned below by registry integrity hash, so no
+      # template files are vendored in this repo.
+      npmTarball =
+        name: version: hash:
+        pkgs.fetchurl {
+          url = "https://registry.npmjs.org/${name}/-/${name}-${version}.tgz";
+          inherit hash;
         };
+      # love.js itself from Davidobot/love.js (the repo the npm `love.js` CLI
+      # package is published from), pinned at a commit whose src/compat ships
+      # the LÖVE ${loveVersion} runtime; the published npm tarball only has 11.4
+      loveJsCommit = "c4f04e185033a7c9fbefa9be3bec88c41a90421b";
+      loveJsSrc = pkgs.fetchurl {
+        url = "https://codeload.github.com/Davidobot/love.js/tar.gz/${loveJsCommit}";
+        hash = "sha256-tDEpaEqh+3tjMGTDeILSWngJ5ePE0Nk4iFvzldJOfRM=";
       };
+      loveJsCli = pkgs.runCommand "love.js-cli" { nativeBuildInputs = [ pkgs.gnutar pkgs.gzip ]; } (
+        ''
+          mkdir -p $out/node_modules
+        ''
+        + pkgs.lib.concatMapStringsSep "\n" (p: ''
+          mkdir -p $out/node_modules/${p.name}
+          tar xzf ${p.src} -C $out/node_modules/${p.name} --strip-components=1
+        '') [
+          {
+            name = "love.js";
+            src = loveJsSrc;
+          }
+          {
+            name = "commander";
+            src = npmTarball "commander" "2.20.3" "sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==";
+          }
+          {
+            name = "fs-extra";
+            src = npmTarball "fs-extra" "3.0.1" "sha512-V3Z3WZWVUYd8hoCL5xfXJCaHWYzmtwW5XWYSlLgERi8PWd8bx1kUHUk8L1BT57e49oKnDDD180mjfrHc1yA9rg==";
+          }
+          {
+            name = "graceful-fs";
+            src = npmTarball "graceful-fs" "4.2.11" "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==";
+          }
+          {
+            name = "jsonfile";
+            src = npmTarball "jsonfile" "2.4.0" "sha512-PKllAqbgLgxHaj8TElYymKCAgrASebJrWpTnEkOaTowt23VKXXN0sUeriJ+eh7y6ufb/CC5ap11pz71/cM0hUw==";
+          }
+          {
+            name = "klaw-sync";
+            src = npmTarball "klaw-sync" "2.1.0" "sha512-lIxVCUMQIF7hfygFfdZgv4Z+e1smLroaYNQMUcf1TcJ5oqxj9m8qk19iIuMVl+tXQPr3CSE4V+4XjGEqmsth0Q==";
+          }
+          {
+            name = "mustache";
+            src = npmTarball "mustache" "2.3.2" "sha512-KpMNwdQsYz3O/SBS1qJ/o3sqUJ5wSb8gb0pul8CO0S56b9Y2ALm8zCfsjPXsqGFfoNBkDwZuZIAjhsZI03gYVQ==";
+          }
+          {
+            name = "universalify";
+            src = npmTarball "universalify" "0.1.2" "sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==";
+          }
+          {
+            name = "uuid";
+            src = npmTarball "uuid" "3.4.0" "sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==";
+          }
+        ]
+      );
 
-      # the web templates (index.html, game.js, love.css, serve.py, consolewrapper.js)
-      # are vendored next to this module in ./love-js; the wasm runtime is fetched
-      # pinned (loveJsRuntime), so the build is just sed/cp
       webRoot = pkgs.runCommand "${gameName}-${gameVersion}-web"
         {
-          nativeBuildInputs = [ pkgs.zip ];
+          nativeBuildInputs = [ pkgs.nodejs ];
           inherit
             gameName
             gameVersion
-            gameAuthor
-            loveVersion
-            canvasWidth
-            canvasHeight
-            canvasColour
-            textColour
+            webMemory
+            loveJsCli
             ;
-          loveJsSrc = ./love-js;
           loveFile = "${loveFile}";
-          uuid = "2fd99e56-5455-45dd-86dd-7af724874d65";
         }
         ''
           set -e
-          module_size=$(stat -c%s "$loveFile")
           title=$(printf '%s' "$gameName" | sed -r 's/\<./\U&/g' | sed -r 's/-/ /g')
+          work=$(mktemp -d)
+          node ${loveJsCli}/node_modules/love.js/index.js \
+            --compatibility --title "$title" --memory "$webMemory" \
+            "$loveFile" "$work"
           dir="$out/${gameName}-${gameVersion}-web"
-          mkdir -p "$dir/theme"
-          sed -e "s/{{title}}/$title/g" -e "s/{{version}}/$gameVersion/g" -e "s/{{author}}/$gameAuthor/g" \
-              -e "s/{{width}}/$canvasWidth/g" -e "s/{{height}}/$canvasHeight/g" \
-              -e "s/{{initial-memory}}/0/g" -e "s/{{canvas-colour}}/$canvasColour/g" \
-              -e "s/{{text-colour}}/$textColour/g" \
-              "$loveJsSrc/index.html" > "$dir/index.html"
-          sed "s/{{page-colour}}/$canvasColour/g" "$loveJsSrc/love.css" > "$dir/theme/love.css"
-          sed -e "s/{{{cachemodule}}}/true/g" \
-              -e "s|{{{metadata}}}|{\"package_uuid\":\"$uuid\",\"remote_package_size\":$module_size,\"files\":[{\"filename\":\"/game.love\",\"crunched\":0,\"start\":0,\"end\":$module_size,\"audio\":false}]}|g" \
-              "$loveJsSrc/game.js" > "$dir/game.js"
-          cp "$loveJsSrc/serve.py" "$loveJsSrc/consolewrapper.js" "$dir/"
-          cp "$loveFile" "$dir/game.love"
-          cp ${loveJsRuntime.${loveVersion}.js} "$dir/love.js"
-          cp ${loveJsRuntime.${loveVersion}.wasm} "$dir/love.wasm"
+          mkdir -p "$out"
+          mv "$work" "$dir"
+          # the CLI copied src/compat (the LÖVE ${loveVersion} runtime) into
+          # the output; just add the COOP/COEP dev server from the package
+          cp ${loveJsCli}/node_modules/love.js/sample/serve.py "$dir/serve.py"
           find "$dir" -exec touch -h -d '@1' {} +
         '';
 

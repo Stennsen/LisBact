@@ -28,11 +28,14 @@
 (fn mode-name [mn] (.. :modes. mn))
 
 (macro call-mode-with-state [method & params]
-  (let [fcall `(pcall ,(sym (.. :state-mode. method)) state-state ,(unpack params))]
-    `(let [(ret# val#) ,fcall] (if ret# val# (do (set-error val#) state-state)))))
+  (let [fcall `(pcall ,(sym (.. :state-mode. method)) state-state
+                      ,(unpack params))]
+    `(let [(ret# val#) ,fcall]
+       (if ret# val# (do
+                       (set-error val#) state-state)))))
 
 (macro not-in-web [expr]
-  `(when (~= :Web (love.system.getOS)) ,expr))
+  `(when (not= :Web (love.system.getOS)) ,expr))
 
 (fn set-mode [new-mode-name ...]
   (print new-mode-name)
@@ -46,7 +49,8 @@
     (set state-mode-name new-mode-name)))
 
 (fn reload-mode! [mode]
-  (let [mn (mode-name mode) old (require mn)
+  (let [mn (mode-name mode)
+        old (require mn)
         _ (tset package.loaded mn nil)
         new (require mn)]
     (when (= (type new) :table)
@@ -69,21 +73,20 @@
 
 (fn keyreleased-error [key _code]
   (case key
-    "q" (love.event.quit)
-    "r" (reload-mode! state-mode-name)
-    "i" (reset-error)))
+    :q (love.event.quit)
+    :r (reload-mode! state-mode-name)
+    :i (reset-error)))
 
 (fn love.load [_args]
-  (set-mode :mode-start)
+  (set-mode initial-state-mode-name)
   ;; the nearest filter allows you to get sharp pixel-art style scaling;
   ;; if you want perfect pixel alignment you can draw to canvas and
   ;; then draw that canvas scaled
-  (love.graphics.setDefaultFilter "nearest" "nearest"))
+  (love.graphics.setDefaultFilter :nearest :nearest))
 
 (fn love.draw []
   (love.graphics.scale scale)
-  (if state-error (draw-error)
-    (call-mode-with-state :draw)))
+  (if state-error (draw-error) (call-mode-with-state :draw)))
 
 ;; you can wrap other love callbacks, such as love.mousepressed
 ;; love.mousemoved, love.mousereleased, love.keypressed in a similar
@@ -93,16 +96,23 @@
 
 (fn love.keyreleased [key code isrepeat]
   (if state-error (keyreleased-error key code)
-    (do
-      (not-in-web (if (and (love.keyboard.isDown "lctrl" "rctrl") (= key "r")) (reload-mode! state-mode-name)))
-      (set-state (state-mode.keyreleased state-state key code isrepeat set-mode)))))
+      (do
+        (not-in-web (if (and (love.keyboard.isDown :lctrl :rctrl) (= key :r))
+                        (reload-mode! state-mode-name)))
+        (set-state (state-mode.keyreleased state-state key code isrepeat
+                                           set-mode)))))
 
-(fn love.keypressed [key code isrepeat] (set-state (call-mode-with-state :keypressed key code isrepeat set-mode)))
+(fn love.keypressed [key code isrepeat]
+  (set-state (call-mode-with-state :keypressed key code isrepeat set-mode)))
 
-(fn love.mousemoved [x y dx dy _is-touch] (set-state (call-mode-with-state :mousemoved x y dx dy set-mode)))
+(fn love.mousemoved [x y dx dy _is-touch]
+  (set-state (call-mode-with-state :mousemoved x y dx dy set-mode)))
 
-(fn love.mousepressed [key scancode isrepeat] (set-state (call-mode-with-state :mousepressed key scancode isrepeat set-mode)))
+(fn love.mousepressed [key scancode isrepeat]
+  (set-state (call-mode-with-state :mousepressed key scancode isrepeat set-mode)))
 
-(fn love.mousereleased [key scancode isrepeat] (set-state (call-mode-with-state :mousereleased key scancode isrepeat set-mode)))
+(fn love.mousereleased [key scancode isrepeat]
+  (set-state (call-mode-with-state :mousereleased key scancode isrepeat
+                                   set-mode)))
 
 (set-mode initial-state-mode-name)
