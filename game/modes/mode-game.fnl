@@ -24,12 +24,9 @@
          (each [_ swarmO (ipairs state.swarms)]
            (swarm.render swarmO)))
  :update (fn _update [state dt _set-mode]
-           (local new-time (+ state.time dt))
-           (if (< countdown-time new-time)
-               (do
-                 (love.event.quit)
-                 (lume.merge state {:time 0}))
-               (lume.merge state {:time new-time})))
+           (each [_ swarmO (ipairs state.swarms)]
+                    (swarm.update swarmO dt))
+            state)
  :keyreleased (fn _keyreleased [state _key _code _is-repeat _set-mode] state)
  :keypressed (fn _keypressed [state _key _code _is-repeat _set-mode] state)
  :mousemoved (fn [state _x _y _dx _dy _set-mode] state)
@@ -40,9 +37,11 @@
                     (each [_ swarmO (ipairs state.swarms)]
                     (swarm.check-mouse-in swarmO x y))
                   )
-                  2 (do
-                      ; set target / move swarm
-                    (print "right mouse button clicked"))
+                  2 (each [_ swarm0 (ipairs state.swarms)] 
+                    (if swarm0.is-selected 
+                      (do (set swarm0.target-x x) (set swarm0.target-y y))
+                    ))
+                   
                  )
                  state)
  :mousereleased (fn [state x y button is-touch presses _set-mode] state)}

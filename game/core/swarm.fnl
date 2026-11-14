@@ -6,6 +6,7 @@
 ;   :target-y number|nil
 ;   :is-selected boolean
 ;   :shape Shape
+;   :update dt
 ; }
 
 (import-macros {: init-require!} :mod)
@@ -45,4 +46,19 @@
 
 (fn get-by-id [swarms id] (find (fn [sw] (= id sw.id)) swarms))
 
-{: new : render : move : set-target : check-mouse-in : get-by-id }
+(fn update [swarm dt] 
+  (if 
+    (and (not= swarm.target-x nil) (not= swarm.target-y nil)) 
+    (let [
+      dx (* dt (- swarm.target-x swarm.x)) 
+      dy (* dt (- swarm.target-y swarm.y))
+      ] 
+      (let [new_pos (move swarm dx dy)] 
+        (set swarm.x new_pos.x)
+        (set swarm.y new_pos.y)
+      )
+    )
+  )
+)
+
+{: new : render : move : set-target : check-mouse-in : get-by-id : update}
