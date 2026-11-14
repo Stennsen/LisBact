@@ -24,7 +24,8 @@
  :draw (fn _draw [state]
          (let [[w h] [(love.window.getMode)]]
            (love.graphics.setFont big-font)
-           (love.graphics.print "Klammer Schwarm" (+ 200 title-offset-x) 150)
+           (love.graphics.print "(Klammer Schwarm)"
+                                (+ (+ (/ w 2) title-offset-x) -200) 150)
            (love.graphics.setFont small-font)
            (love.graphics.print "Pressy SPACE to start!" 200 250)))
  :update (fn _update [state dt _set-mode]
@@ -40,7 +41,7 @@
                (if (= key :space)
                    (do
                      (print :KEY)
-                     (set-mode :mode-game)))
+                     (set-mode :map)))
                state)
  :mousemoved (fn [state _x _y _dx _dy _set-mode] state)
  :mousepressed (fn [state _key _scancode _is-repeat _set-mode] state)
