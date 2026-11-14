@@ -10,6 +10,9 @@
 
 (local lume (require :lib.lume))
 
+(local {: merge} (require :lib.lume))
+(local {: pprint} (require :core.utils))
+
 (local countdown-time 300)
 
 {:activate (fn _activate []
@@ -24,12 +27,10 @@
          (each [_ swarmO (ipairs state.swarms)]
            (swarm.render swarmO)))
  :update (fn _update [state dt _set-mode]
-           (local new-time (+ state.time dt))
-           (if (< countdown-time new-time)
-               (do
-                 (love.event.quit)
-                 (lume.merge state {:time 0}))
-               (lume.merge state {:time new-time})))
+           (let [new-state (merge state
+                                  {:swarms (icollect [_ sw (ipairs state.swarms)]
+                                             (swarm.tick sw dt))})]
+             new-state))
  :keyreleased (fn _keyreleased [state _key _code _is-repeat _set-mode] state)
  :keypressed (fn _keypressed [state _key _code _is-repeat _set-mode] state)
  :mousemoved (fn [state _x _y _dx _dy _set-mode] state)
