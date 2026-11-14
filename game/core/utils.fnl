@@ -4,9 +4,9 @@
   "pretty prints objects"
   (print (fennel.view obj)))
 
-(fn find [cnd tbl] 
+(fn find [cnd tbl]
   (var res nil)
-  (each [_key value (ipairs tbl) &until res] 
+  (each [_key value (ipairs tbl) &until res]
     (if (cnd value) (set res value)))
   res)
 
@@ -15,4 +15,10 @@
 
 (fn pair-eq [[a1 b1] [a2 b2]] (and (= a1 b1) (= a2 b2)))
 
-{ : pprint : find : map : pair-eq }
+(fn car [cons]
+  (. cons 1))
+
+(fn cdr [cons]
+  (. cons 2))
+
+{ : pprint : find : map : pair-eq : car : cdr}
