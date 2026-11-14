@@ -17,13 +17,6 @@
 
 (fn in-shape [shape x y] (shape:contains x y))
 
-(fn all-collisions [shapes]
-    (let [collisions {}]
-        (each [_k shape (ipairs shapes)]
-            (each [other _separating-vec (hc.collisions shape)]
-                (let [pair [shape._id other._id] antipair [other._id shape._id]] 
-                    (if (not (find (fn [p] (or (pair-eq p pair) (pair-eq p antipair))) collisions))
-                        (table.insert collisions pair)))))
-    collisions))
+(fn collides-with [shape] hc.collisions shape)
 
-{ : new-circle : remove-circle : move-circle : in-shape : all-collisions }
+{ : new-circle : remove-circle : move-circle : in-shape : collides-with }

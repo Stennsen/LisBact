@@ -15,7 +15,7 @@
 (local collisions (require-mod! :core.collisions))
 
 (local {: merge} (require :lib.lume))
-(local {: pprint : car : cdr} (require :core.utils))
+(local {: pprint : car : cdr : map } (require :core.utils))
 
 (local {: find} (require-mod! :core.utils))
 
@@ -56,18 +56,25 @@
                 :y (+ swarm.y (* (cdr norm-vec) dt speed))}))
       swarm))
 
+(fn get-by-id [swarms id]
+  (find (fn [sw] (= id sw._id)) swarms))
+
 (fn set-target [swarm x y]
   "returns a swarm with the target coordinates set"
   (merge swarm {:target-x x :target-y y}))
 
-(fn tick [swarm dt]
+(fn handle-collisions [swarm swarms _dt] 
+  (let [colls (collisions.collides-with swarm.shape)
+        coll-swarms (map (fn [sh] (get-by-id swarms sh._id)) colls)]
+        (each [k _v (pairs coll-swarms)] (print k._id))
+        swarm))
+
+(fn tick [swarms swarm dt]
   (-> swarm
-      (move-to-target dt)))
+      (move-to-target dt)
+      (handle-collisions swarms dt)))
 
 (fn check-mouse-in [swarm mouse-x mouse-y]
   (set swarm.is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)))
-
-(fn get-by-id [swarms id]
-  (find (fn [sw] (= id sw._id)) swarms))
 
 {: new : render : tick : set-target : check-mouse-in : get-by-id}
