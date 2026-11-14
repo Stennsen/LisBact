@@ -6,12 +6,19 @@
 
 (local countdown-time 300)
 
-(local background_color [(love.math.colorFromBytes 215 235 51)])
-(local background_cell_color [(love.math.colorFromBytes 185 223 50)])
-(local background_cell_count 40)
+(local background_color [(love.math.colorFromBytes 235 245 151)])
+(local background_cell_color [(love.math.colorFromBytes 195 233 150)])
+(local background_cell_count 80)
 
 (local screen_size_x 1600)
 (local screen_size_y 900)
+
+(local mainCanvas (love.graphics.newCanvas))
+;; Shader
+(local blurShader (love.graphics.newShader "assets/shaders/blur.fs"))
+(blurShader:send :Radius 16)
+(local blurCanvas (love.graphics.newCanvas))
+
 
 (local background_cell {
   
@@ -61,10 +68,38 @@
  :leave (fn _leave [state] state)
  :draw (fn _draw [state]
          (let [[w h] [(love.window.getMode)]]
-           (love.graphics.clear (unpack background_color))
-           (each [_ value (ipairs background_cells)]
+          ;; Solid background color
+          (love.graphics.setCanvas mainCanvas)
+          (love.graphics.clear (unpack background_color))
+          (each [_ value (ipairs background_cells)]
             (value:draw)
-           )
+          )
+          (love.graphics.setCanvas)
+
+          ;; Blur shader
+          (love.graphics.setBlendMode :alpha :premultiplied)
+          (love.graphics.setShader blurShader)
+
+          
+          ;; Blur X
+          (love.graphics.setCanvas blurCanvas)
+          (love.graphics.clear)
+          (blurShader:send "Offset" [ 1.0 0.0 ])
+          (love.graphics.draw mainCanvas)
+          
+          (love.graphics.setCanvas mainCanvas)
+          (love.graphics.clear)
+
+          ;; Blur Y
+          (blurShader:send "Offset" [ 0.0 1.0 ])
+          (love.graphics.draw blurCanvas)
+
+          (love.graphics.setCanvas)
+          (love.graphics.setShader)
+          (love.graphics.draw mainCanvas)
+          (love.graphics.setBlendMode "alpha")
+
+
                                  ))
  :update (fn _update [state dt _set-mode]
             (each [_ value (ipairs background_cells)]
