@@ -27,7 +27,7 @@
 
 (fn mode-name [mn] (.. :modes. mn))
 
-(macro call-mode-with-state [method & params] 
+(macro call-mode-with-state [method & params]
   (let [fcall `(pcall ,(sym (.. :state-mode. method)) state-state ,(unpack params))]
     `(let [(ret# val#) ,fcall] (if ret# val# (do (set-error val#) state-state))))
   )
@@ -65,14 +65,14 @@
   (love.graphics.print "i to ignore the error" 15 90)
   (love.graphics.print "q to quit" 15 110))
 
-(fn keyreleased-error [key _code] 
+(fn keyreleased-error [key _code]
   (case key
     "q" (love.event.quit)
     "r" (reload-mode! state-mode-name)
     "i" (reset-error)))
 
 (fn love.load [_args]
-  (set-mode initial-state-mode-name)
+  (set-mode :map)
   ;; the nearest filter allows you to get sharp pixel-art style scaling;
   ;; if you want perfect pixel alignment you can draw to canvas and
   ;; then draw that canvas scaled
@@ -90,8 +90,8 @@
 (fn love.update [dt]
   (set-state (call-mode-with-state :update dt set-mode)))
 
-(fn love.keyreleased [key code isrepeat] 
-  (if state-error (keyreleased-error key code) 
+(fn love.keyreleased [key code isrepeat]
+  (if state-error (keyreleased-error key code)
     (do
       (if (and (love.keyboard.isDown "lctrl" "rctrl") (= key "r")) (reload-mode! state-mode-name))
       (set-state (state-mode.keyreleased state-state key code isrepeat set-mode)))))
