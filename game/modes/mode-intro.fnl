@@ -2,6 +2,8 @@
 
 (import-macros {: incf} :sample-macros)
 
+(local lume (require :lib.lume))
+
 (local countdown-time 300)
 
 {:activate (fn _activate []
@@ -18,7 +20,7 @@
  :update (fn _update [state dt _set-mode]
             (local new-time (+ state.time dt))
             (if (< countdown-time new-time) 
-              (do (love.event.quit) { :time 0 }) { :time new-time }))
+              (do (love.event.quit) (lume.merge state { :time 0 })) (lume.merge state { :time new-time })))
  :keyreleased (fn _keyreleased [state _key _code _is-repeat _set-mode] state)
  :keypressed (fn _keypressed [state _key _code _is-repeat _set-mode] state)
  :mousemoved (fn [state _x _y _dx _dy _set-mode] state)
