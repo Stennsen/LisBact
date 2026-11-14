@@ -53,9 +53,20 @@
       (tset package.loaded mn old))))
 
 (fn draw-error [] (love.graphics.setFont debug-font)
-  (love.graphics.clear 0.34 0.61 0.86)
-  (love.graphics.setColor 0.9 0.9 0.9)
-  (love.graphics.print error 15 10))
+  (love.graphics.clear 0.5 0.5 0.5)
+  (love.graphics.setColor 1.0 0 0)
+  (love.graphics.print "Caught error:" 15 10)
+  (love.graphics.print state-error 30 30)
+  (love.graphics.setColor 1 1 1)
+  (love.graphics.print "r to reload current mode" 15 70)
+  (love.graphics.print "i to ignore the error" 15 90)
+  (love.graphics.print "q to quit" 15 110))
+
+(fn keyreleased-error [key _code] 
+  (case key
+    "q" (love.event.quit)
+    "r" (reload-mode! state-mode-name)
+    "i" (reset-error)))
 
 (fn love.load [_args]
   (set-mode :mode-intro)
@@ -77,8 +88,10 @@
   (set-state (call-mode-with-state :update dt set-mode)))
 
 (fn love.keyreleased [key code isrepeat] 
-  (if (and (love.keyboard.isDown "lctrl" "rctrl") (= key "r")) (reload-mode! state-mode-name))
-  (set-state (state-mode.keyreleased state-state key code isrepeat set-mode)))
+  (if state-error (keyreleased-error key code) 
+    (do
+      (if (and (love.keyboard.isDown "lctrl" "rctrl") (= key "r")) (reload-mode! state-mode-name))
+      (set-state (state-mode.keyreleased state-state key code isrepeat set-mode)))))
 
 (fn love.keypressed [key code isrepeat] (set-state (state-mode.keypressed state-state key code isrepeat set-mode)))
 
