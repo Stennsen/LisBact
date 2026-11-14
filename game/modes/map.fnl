@@ -5,7 +5,7 @@
 (local swarm (require-mod! :core.swarm))
 
 (local {: merge} (require :lib.lume))
-(local {: pprint : map} (require :core.utils))
+(local {: pprint : map : foreach } (require :core.utils))
 (local background (require-mod! :core.background))
 
 (local bg (background.new))
@@ -18,8 +18,8 @@
  :leave (fn _leave [state] state)
  :draw (fn _draw [state]
          (background.draw bg state)
-         (each [_ sw (ipairs state.swarms)]
-           (swarm.render sw)))
+         (foreach swarm.render state.swarms)
+         (foreach swarm.postrender state.swarms))
  :update (fn _update [state dt _set-mode]
            (background.update bg state dt _set-mode)
            (merge state

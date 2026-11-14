@@ -21,4 +21,6 @@
 (fn cdr [cons]
   (. cons 2))
 
-{ : pprint : find : map : pair-eq : car : cdr}
+(fn foreach [func tbl] (each [_k v (ipairs tbl)] (func v)))
+
+{ : pprint : find : map : pair-eq : car : cdr : foreach }

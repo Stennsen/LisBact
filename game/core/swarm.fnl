@@ -37,10 +37,12 @@
   (if swarm.is-selected
       (do
         (love.graphics.setColor 1 0 1)
-        (love.graphics.circle :fill swarm.x swarm.y swarm.size)
-        (swarm.stats:draw swarm.x swarm.y)))
+        (love.graphics.circle :fill swarm.x swarm.y swarm.size)))
   (love.graphics.setColor 1 1 1)
   (love.graphics.circle :line swarm.x swarm.y swarm.size))
+
+(fn postrender [swarm]
+  (if swarm.is-selected (swarm.stats:draw swarm.x swarm.y)))
 
 (fn move [swarm x-delta y-delta]
   "recieves a delta for x and y and returns a new Swarm with the updated coordinates"
@@ -84,4 +86,4 @@
   "takes a swarm and x/y coordinates of a point to be checked against"
   (merge swarm {:is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)}))
 
-{: new : render : tick : set-target : check-mouse-in : get-by-id}
+{: new : render : tick : set-target : check-mouse-in : get-by-id : postrender }
