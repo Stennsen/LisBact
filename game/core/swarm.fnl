@@ -43,6 +43,6 @@
 (fn check-mouse-in [swarm mouse-x mouse-y]
   (set swarm.is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)))
 
-(fn get-by-id [swarms id] (find (fn [sw] (= id sw.id)) swarms))
+(fn get-by-id [swarms id] (find (fn [sw] (= id sw._id)) swarms))
 
 {: new : render : move : set-target : check-mouse-in : get-by-id }
