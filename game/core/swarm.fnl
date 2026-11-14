@@ -1,3 +1,13 @@
+; swarm {
+;   :size int
+;   :x number
+;   :y number
+;   :target-x number|nil
+;   :target-y number|nil
+; }
+
+(local {: merge} (require :lib.lume))
+
 (fn new [size x y]
   "creates a new swarm with given parameters"
   (let [x (if (not x) 0 x)
@@ -10,6 +20,9 @@
 (fn move [swarm x-delta y-delta]
   "recieves a delta for x and y and returns a new Swarm with the updated coordinates"
   (new swarm.size (+ swarm.x x-delta) (+ swarm.y y-delta)))
+
+(fn set-target [swarm x y]
+  (merge swarm {:target-x x :target-y y}))
 
 (fn check-mouse-in [swarm mouse-x mouse-y]
 (print swarm.x mouse-x mouse-y)
@@ -27,4 +40,4 @@
 ; (print "NOT INSIDE"))
 )
 
-{: new : render : move : check-mouse-in}
+{: new : render : move : set-target: check-mouse-in}
