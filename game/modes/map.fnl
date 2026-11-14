@@ -6,6 +6,9 @@
 
 (local {: merge} (require :lib.lume))
 (local {: pprint : map} (require :core.utils))
+(local background (require-mod! :core.background))
+
+(local bg (background.new))
 
 {:activate (fn _activate []
              ;; only called called once. Useful for loading in large assets
@@ -14,9 +17,11 @@
  :enter (fn _enter [state] state)
  :leave (fn _leave [state] state)
  :draw (fn _draw [state]
+         (background.draw bg state)
          (each [_ sw (ipairs state.swarms)]
            (swarm.render sw)))
  :update (fn _update [state dt _set-mode]
+           (background.update bg state dt _set-mode)
            (merge state
                   {:swarms (icollect [_ sw (ipairs state.swarms)]
                              (swarm.tick state.swarms sw dt))}))
