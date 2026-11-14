@@ -10,12 +10,24 @@
 
 (local state (require :state))
 (var state-state (state.init))
+(var state-error nil)
 
 (local activated-modes {})
 
+(local debug-font (love.graphics.setNewFont 16))
+
 (fn set-state [new-state] (set state-state new-state))
 
+(fn set-error [err] (set state-error err))
+
+(fn reset-error [] (set-error nil))
+
 (fn mode-name [mn] (.. :modes. mn))
+
+(macro call-mode-with-state [method & params] 
+  (let [fcall `(pcall ,(sym (.. :state-mode. method)) state-state ,(unpack params))]
+    `(let [(ret# val#) ,fcall] (if ret# val# (do (set-error val#) state-state))))
+  )
 
 (fn set-mode [new-mode-name ...]
   (print new-mode-name)
@@ -40,6 +52,11 @@
           (tset old k nil)))
       (tset package.loaded mn old))))
 
+(fn draw-error [] (love.graphics.setFont debug-font)
+  (love.graphics.clear 0.34 0.61 0.86)
+  (love.graphics.setColor 0.9 0.9 0.9)
+  (love.graphics.print error 15 10))
+
 (fn love.load [_args]
   (set-mode :mode-intro)
   ;; the nearest filter allows you to get sharp pixel-art style scaling;
@@ -50,13 +67,14 @@
 
 (fn love.draw []
   (love.graphics.scale scale)
-  (state-mode.draw state-state))
+  (if state-error (draw-error)
+    (call-mode-with-state :draw)))
 
 ;; you can wrap other love callbacks, such as love.mousepressed
 ;; love.mousemoved, love.mousereleased, love.keypressed in a similar
 ;; way to love.update.
 (fn love.update [dt]
-  (set-state (state-mode.update state-state dt set-mode)))
+  (set-state (call-mode-with-state :update dt set-mode)))
 
 (fn love.keyreleased [key code isrepeat] 
   (if (and (love.keyboard.isDown "lctrl" "rctrl") (= key "r")) (reload-mode! state-mode-name))

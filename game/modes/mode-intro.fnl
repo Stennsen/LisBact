@@ -21,6 +21,6 @@
               (do (love.event.quit) { :time 0 }) { :time new-time }))
  :keyreleased (fn _keyreleased [state _key _code _is-repeat _set-mode] state)
  :keypressed (fn _keypressed [state _key _code _is-repeat _set-mode] state)
- :mousemoved (lambda [state _x _y _dx _dy _set-mode] state)
- :mousepressed (lambda [state _key _scancode _is-repeat _set-mode] state)
- :mousereleased (lambda [state _key _scancode _is-repeat _set-mode] state) }
+ :mousemoved (fn [state _x _y _dx _dy _set-mode] state)
+ :mousepressed (fn [state _key _scancode _is-repeat _set-mode] state)
+ :mousereleased (fn [state _key _scancode _is-repeat _set-mode] state) }
