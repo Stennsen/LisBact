@@ -73,11 +73,8 @@ function SwarmStats:draw(x, y)
         self.text:getHeight() + (2 * padding), 
         16)
 
-    local padding = 10
-    local paddingLeftPos = x + padding
-    local paddingTopStart = y + padding
     love.graphics.setColor(1, 1, 1)
-    love.graphics.draw(self.text, paddingLeftPos, paddingTopStart)
+    love.graphics.draw(self.text, x + padding, y + padding)
 
     love.graphics.setColor(r, g, b, a)
 end
