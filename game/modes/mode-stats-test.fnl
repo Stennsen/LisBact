@@ -1,9 +1,6 @@
 (local stats (require :core/swarm-stats))
 (local stat (stats:new))
 
-(local powerUps (require :core/power-up))
-(local powerUp (powerUps:new 100 100 5 [0.8 0.5 0.8 0.2] "attack" 2))
-
 (local worldPowerUpManager (require :core/world-power-up-manager))
 (local manager (worldPowerUpManager:new 5))
 
@@ -19,7 +16,6 @@
  :draw (fn _draw [state]
     (let [[x y] [(love.mouse.getPosition)]]
     (manager:draw)
-    (powerUp:draw)
     (stat:draw x y))
  )
  :update (fn _update [state dt _set-mode]
@@ -28,7 +24,6 @@
  :keyreleased (fn _keyreleased [state _key _code _is-repeat _set-mode] state)
  :keypressed (fn _keypressed [state _key _code _is-repeat _set-mode] 
      (if (= _key :space) (randomStateChange))
-     (if (= _key :t) (powerUp:applyToStats stat))
      (if (= _key :p) (manager:consumeRandomPowerUp stat))
  state)
  :mousemoved (lambda [state _x _y _dx _dy _set-mode]

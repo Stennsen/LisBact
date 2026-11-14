@@ -3,14 +3,6 @@ local PowerUp = require("core/power-up")
 local WorldPowerUpManager = {}
 WorldPowerUpManager.__index = WorldPowerUpManager
 
-local statColors = {
-    attack    = {1, 0, 0, 1},
-    defence   = {0, 0, 1, 1},
-    speed     = {0, 1, 0, 1},
-    unitCount = {1, 1, 0, 1},
-    health    = {1, 0, 0, 1}
-}
-
 local statNames = {"attack", "defence", "speed", "unitCount", "health"}
 
 function WorldPowerUpManager:new (spawnedPowerUps)
@@ -33,7 +25,7 @@ function WorldPowerUpManager:spawnPowerUps(spawnedPowerUps)
         local yPos = love.math.random(radius, height - radius)
         local gain = love.math.random(1, 3)
 
-        local p = PowerUp:new(xPos, yPos, radius, statColors[stat], stat, gain)
+        local p = PowerUp:new(xPos, yPos, stat, gain)
         table.insert(self.powerUps, p)
     end
 end
