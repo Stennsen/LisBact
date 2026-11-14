@@ -5,7 +5,7 @@
 (local scale 1)
 
 ;; Used for defining start scene
-(local initial-state-mode-name :map)
+(local initial-state-mode-name :mode-background_test)
 
 (var state-mode nil)
 (var state-mode-name initial-state-mode-name)
@@ -80,7 +80,7 @@
     "i" (reset-error)))
 
 (fn love.load [_args]
-  (set-mode :map)
+  (set-mode initial-state-mode-name)
   ;; the nearest filter allows you to get sharp pixel-art style scaling;
   ;; if you want perfect pixel alignment you can draw to canvas and
   ;; then draw that canvas scaled
