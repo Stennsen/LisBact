@@ -5,12 +5,15 @@
 (local require-mod! (init-require! :modes.mode-tobias))
 
 (local swarm (require-mod! :core.swarm))
+(local marker (require-mod! :core.target-marker))
 
 (local collisions (require-mod! :core.collisions))
 
 (local lume (require :lib.lume))
 
 (local countdown-time 300)
+
+(var target-marker nil)
 
 {:activate (fn _activate []
              ;; only called called once. Useful for loading in large assets
@@ -22,7 +25,11 @@
          (let [[w h] [(love.window.getMode)]]
            (love.graphics.print "GAME MODE" 10 10))
          (each [_ swarmO (ipairs state.swarms)]
-           (swarm.render swarmO)))
+           (swarm.render swarmO))
+           (if (~= target-marker nil)
+            (marker.render target-marker)
+           )
+           )
  :update (fn _update [state dt _set-mode]
            (local new-time (+ state.time dt))
            (if (< countdown-time new-time)
@@ -46,8 +53,11 @@
                      (local (x y) (love.mouse.getPosition))
                      (each [_ swarmO (ipairs state.swarms)]
                         (if swarmO.is-selected
-                            (swarm.set-target swarmO x y)
-                            (print "target select" x y)
+                            (do
+                                (swarm.set-target swarmO x y)
+                                (print "target select" x y)
+                                (set target-marker (marker.new x y))
+                            )
                         )
                      )
                   )
