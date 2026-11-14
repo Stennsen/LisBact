@@ -19,8 +19,9 @@
 (local target-marker (require-mod! :core.target-marker))
 (local SwarmStats (require :core.swarm-stats))
 
-(local {: merge} (require :lib.lume))
-(local {: pprint : car : cdr : map} (require :core.utils))
+(local lume (require :lib.lume))
+
+(local {: pprint : car : cdr : map : unset} (require :core.utils))
 
 (local {: find} (require-mod! :core.utils))
 
@@ -44,16 +45,24 @@
 (fn postrender [swarm]
   (if swarm.is-selected (swarm.stats:draw swarm.x swarm.y)))
 
+(fn has-reached-target? [swarm] 
+  (and swarm.target-x swarm.target-y
+    (let [dx (math.abs (- swarm.x swarm.target-x)) dy (math.abs (- swarm.y swarm.target-y))]
+      (and (< dx 1) (< dy 1))
+    )))
+
 (fn move [swarm x-delta y-delta]
   "recieves a delta for x and y and returns a new Swarm with the updated coordinates"
   (collisions.move-circle swarm.shape x-delta y-delta)
-  (merge swarm {:x (+ swarm.x x-delta) :y (+ swarm.y y-delta)}))
+  (lume.merge swarm {:x (+ swarm.x x-delta) :y (+ swarm.y y-delta)}))
 
 (fn move-to-target [swarm dt]
   "returns a new swarm nearing the target location"
   (if (not dt) (print "move-to-target: argument dt not set"))
-  (if (and (not= swarm.target-x nil) (not= swarm.target-y nil))
-      (let [speed 50
+  (if (has-reached-target? swarm)
+    (let [m (unset (lume.merge swarm { :x swarm.target-x :y swarm.target-y }) :target-x :target-y)] m)
+    (if (and (not= swarm.target-x nil) (not= swarm.target-y nil))
+        (let [speed 50
             source [(. swarm :x) (. swarm :y)]
             target [swarm.target-x swarm.target-y]
             vec [(- (car target) (car source)) (- (cdr target) (cdr source))]
@@ -62,19 +71,19 @@
             norm-vec [(/ (car vec) len-vec) (/ (cdr vec) len-vec)]
             dx (* (car norm-vec) dt speed)
             dy (* (cdr norm-vec) dt speed)]
-        (move swarm dx dy))
-      swarm))
+          (move swarm dx dy))
+        swarm)))
 
 (fn get-by-id [swarms id]
   (find (fn [sw] (= id (collisions.get-id sw.shape))) swarms))
 
 (fn set-target [swarm x y]
   "returns a swarm with the target coordinates set"
-  (merge swarm {:target-x x :target-y y}))
+  (lume.merge swarm {:target-x x :target-y y}))
 
 (fn handle-collisions [swarm swarms _dt]
   (let [colls (collisions.collides-with swarm.shape)]
-    (each [k v (pairs colls)] (print (collisions.get-id k)))
+    (each [k v (pairs colls)] (do ))
     swarm))
 
 (fn tick [swarms swarm dt]
@@ -84,6 +93,6 @@
 
 (fn check-mouse-in [swarm mouse-x mouse-y]
   "takes a swarm and x/y coordinates of a point to be checked against"
-  (merge swarm {:is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)}))
+  (lume.merge swarm {:is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)}))
 
 {: new : render : tick : set-target : check-mouse-in : get-by-id : postrender }
