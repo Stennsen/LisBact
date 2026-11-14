@@ -1,4 +1,5 @@
 ; swarm {
+;   :id int
 ;   :size int
 ;   :x number
 ;   :y number
@@ -7,6 +8,7 @@
 ;   :is-selected boolean
 ;   :shape Shape
 ;   :update dt
+;   :stats SwarmStats
 ; }
 
 (import-macros {: init-require!} :mod)
@@ -14,8 +16,8 @@
 (local require-mod! (init-require! :core.swarm))
 
 (local collisions (require-mod! :core.collisions))
-
 (local target-marker (require-mod! :core.target-marker))
+(local SwarmStats (require :core.swarm-stats))
 
 (local {: merge} (require :lib.lume))
 (local {: pprint : car : cdr : map} (require :core.utils))
@@ -27,7 +29,7 @@
   (let [x (if (not x) 0 x)
         y (if (not y) 0 y)
         shape (collisions.new-circle id x y size)]
-    {: id : size : x : y : is-selected : shape}))
+    {: id : size : x : y : is-selected : shape :stats (SwarmStats:new)}))
 
 (fn render [swarm]
   (if (and swarm.target-x swarm.target-y)
@@ -35,7 +37,8 @@
   (if swarm.is-selected
       (do
         (love.graphics.setColor 1 0 1)
-        (love.graphics.circle :fill swarm.x swarm.y swarm.size)))
+        (love.graphics.circle :fill swarm.x swarm.y swarm.size)
+        (swarm.stats:draw swarm.x swarm.y)))
   (love.graphics.setColor 1 1 1)
   (love.graphics.circle :line swarm.x swarm.y swarm.size))
 
