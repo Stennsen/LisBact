@@ -6,6 +6,7 @@
 ;   :target-y number|nil
 ;   :is-selected boolean
 ;   :shape Shape
+;   :update dt
 ; }
 
 (import-macros {: init-require!} :mod)
