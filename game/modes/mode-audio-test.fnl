@@ -1,5 +1,3 @@
-(import-macros {: incf} :sample-macros)
-
 (local audioPlayer (require :core/audio-player))
 (local backgroundMusic (audioPlayer:newMusicPlayer "assets/audiofiles/example-music.ogg"))
 (local sound (audioPlayer:newSoundPlayer "assets/audiofiles/example-effect.wav"))
