@@ -26,10 +26,8 @@
  :mousepressed (fn [state x y button is-touch presses _set-mode]
                  (case button
                    1 (merge state
-                            {:swarms (map (fn [sw] swarm.check-mouse-in
-                                            sw
-                                            x
-                                            y)
+                            {:swarms (map (fn [sw]
+                                            (swarm.check-mouse-in sw x y))
                                           state.swarms)})
                    2 (merge state
                             {:swarms (map (fn [sw]
