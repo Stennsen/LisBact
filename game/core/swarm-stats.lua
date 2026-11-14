@@ -10,6 +10,7 @@ speed = love.graphics.newImage("assets/icons/speed_g_64.png")
 
 borderToWindow = 10
 gabBetweenIconAndStat = 10
+globalDrawPositionOffset = 10
 
 function SwarmStats:new ()
   local swarmStats = setmetatable({}, self)
@@ -19,6 +20,14 @@ function SwarmStats:new ()
   swarmStats.speed = SwarmStat:new(2,5,speed)
   swarmStats.unitCount = SwarmStat:new(2,5,count)
   swarmStats.health = SwarmStat:new(2,5)
+
+  swarmStats.allStats = {
+    swarmStats.attack,
+    swarmStats.defence,
+    swarmStats.speed,
+    swarmStats.unitCount,
+    swarmStats.health
+  }
 
   swarmStats.drawnStats = {
     swarmStats.attack,
@@ -79,7 +88,9 @@ function SwarmStats:draw(x, y)
 
     local backgroundW = self:determineMaxDrawWidth()
     love.graphics.setColor(1, 1, 1)
-    love.graphics.rectangle("fill", x, y, 
+    love.graphics.rectangle("fill", 
+        x + globalDrawPositionOffset, 
+        y + globalDrawPositionOffset, 
         backgroundW,
         iconHeights + (2 * borderToWindow),
         16)
