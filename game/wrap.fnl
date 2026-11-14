@@ -72,7 +72,14 @@
     "i" (reset-error)))
 
 (fn love.load [_args]
+<<<<<<< conflict 1 of 3
++++++++ qkkozmpl 1c2fef58 "Use state merging" (rebase destination)
   (set-mode initial-state-mode-name)
+%%%%%%% diff from: vtkmqkvx 73a5dd71 "Revert "move fennel-ls config into game/"" (parents of rebased revision)
+\\\\\\\        to: kowmlkpn 033c506c "implement swarm "class"" (rebased revision)
+-  (set-mode :mode-intro)
++  (set-mode :map)
+>>>>>>> conflict 1 of 3 ends
   ;; the nearest filter allows you to get sharp pixel-art style scaling;
   ;; if you want perfect pixel alignment you can draw to canvas and
   ;; then draw that canvas scaled
@@ -90,11 +97,20 @@
 (fn love.update [dt]
   (set-state (call-mode-with-state :update dt set-mode)))
 
+<<<<<<< conflict 2 of 3
++++++++ qkkozmpl 1c2fef58 "Use state merging" (rebase destination)
 (fn love.keyreleased [key code isrepeat] 
   (if state-error (keyreleased-error key code) 
     (do
       (if (and (love.keyboard.isDown "lctrl" "rctrl") (= key "r")) (reload-mode! state-mode-name))
       (set-state (state-mode.keyreleased state-state key code isrepeat set-mode)))))
+%%%%%%% diff from: vtkmqkvx 73a5dd71 "Revert "move fennel-ls config into game/"" (parents of rebased revision)
+\\\\\\\        to: kowmlkpn 033c506c "implement swarm "class"" (rebased revision)
+-(fn love.keyreleased [key code isrepeat] 
++(fn love.keyreleased [key code isrepeat]
+   (if (and (love.keyboard.isDown "lctrl" "rctrl") (= key "r")) (reload-mode! state-mode-name))
+   (set-state (state-mode.keyreleased state-state key code isrepeat set-mode)))
+>>>>>>> conflict 2 of 3 ends
 
 (fn love.keypressed [key code isrepeat] (set-state (call-mode-with-state :keypressed key code isrepeat set-mode)))
 
@@ -102,6 +118,14 @@
 
 (fn love.mousepressed [key scancode isrepeat] (set-state (call-mode-with-state :mousepressed key scancode isrepeat set-mode)))
 
+<<<<<<< conflict 3 of 3
++++++++ qkkozmpl 1c2fef58 "Use state merging" (rebase destination)
 (fn love.mousereleased [key scancode isrepeat] (set-state (call-mode-with-state :mousereleased key scancode isrepeat set-mode)))
 
 (set-mode initial-state-mode-name)
+%%%%%%% diff from: vtkmqkvx 73a5dd71 "Revert "move fennel-ls config into game/"" (parents of rebased revision)
+\\\\\\\        to: kowmlkpn 033c506c "implement swarm "class"" (rebased revision)
+ (fn love.mousereleased [key scancode isrepeat] (set-state (state-mode.mousereleased state-state key scancode isrepeat set-mode)))
+-
+-(set-mode :mode-intro)
+>>>>>>> conflict 3 of 3 ends
