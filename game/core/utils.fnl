@@ -1,4 +1,4 @@
-(local fennel (require :fennel))
+(local fennel (require :lib.fennel))
 
 (fn pprint [obj]
   "pretty prints objects"
