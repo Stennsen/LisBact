@@ -5,7 +5,6 @@
     {: size : x : y}))
 
 (fn render [swarm]
-  (love.graphics.print "ASDF" 10 10)
   (love.graphics.circle :line swarm.x swarm.y swarm.size))
 
 (fn move [swarm x-delta y-delta]
