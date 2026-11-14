@@ -17,6 +17,7 @@ function WorldPowerUpManager:new (spawnedPowerUps)
     local manager = setmetatable({}, self)
 
     manager.powerUps = {}
+    manager.consumedPowerUps = {}
     manager:spawnPowerUps(spawnedPowerUps)
 
     return manager
@@ -35,6 +36,39 @@ function WorldPowerUpManager:spawnPowerUps(spawnedPowerUps)
         local p = PowerUp:new(xPos, yPos, radius, statColors[stat], stat, gain)
         table.insert(self.powerUps, p)
     end
+end
+
+function WorldPowerUpManager:consumeRandomPowerUp(stats)
+    if #self.powerUps == 0 then
+        return nil
+    end
+
+    local powerUp = table.remove(self.powerUps, love.math.random(#self.powerUps))
+    powerUp:applyToStats(stats)
+    table.insert(self.consumedPowerUps, powerUp)
+
+    return powerUp
+end
+
+function WorldPowerUpManager:update(dt)
+    for i = #self.consumedPowerUps, 1, -1 do
+        local powerUp = self.consumedPowerUps[i]
+        if not powerUp:isPlayingSound() then
+            powerUp:destroy()
+            table.remove(self.consumedPowerUps, i)
+        end
+    end
+end
+
+function WorldPowerUpManager:destroy()
+    for _, p in ipairs(self.powerUps) do
+        p:destroy()
+    end
+    for _, p in ipairs(self.consumedPowerUps) do
+        p:destroy()
+    end
+    self.powerUps = {}
+    self.consumedPowerUps = {}
 end
 
 function WorldPowerUpManager:draw()
