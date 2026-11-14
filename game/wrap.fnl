@@ -5,7 +5,7 @@
 (local scale 1)
 
 ;; Used for defining start scene
-(local initial-state-mode-name :mode-game)
+(local initial-state-mode-name :map)
 
 (var state-mode nil)
 (var state-mode-name initial-state-mode-name)

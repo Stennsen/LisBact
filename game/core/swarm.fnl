@@ -15,6 +15,8 @@
 
 (local collisions (require-mod! :core.collisions))
 
+(local target-marker (require-mod! :core.target-marker))
+
 (local {: merge} (require :lib.lume))
 (local {: pprint : car : cdr : map } (require :core.utils))
 
@@ -28,6 +30,7 @@
     {: id : size : x : y : is-selected : shape}))
 
 (fn render [swarm]
+  (if (and swarm.target-x swarm.target-y) (target-marker.render swarm.target-x swarm.target-y))
   (if swarm.is-selected
       (do
         (love.graphics.setColor 1 0 1)
@@ -50,11 +53,10 @@
             vec [(- (car target) (car source)) (- (cdr target) (cdr source))]
             len-vec (math.sqrt (+ (* (car vec) (car vec))
                                   (* (cdr vec) (cdr vec))))
-            norm-vec [(/ (car vec) len-vec) (/ (cdr vec) len-vec)]]
-        ; (pprint source)
-        (merge swarm
-               {:x (+ swarm.x (* (car norm-vec) dt speed))
-                :y (+ swarm.y (* (cdr norm-vec) dt speed))}))
+            norm-vec [(/ (car vec) len-vec) (/ (cdr vec) len-vec)]
+            dx (* (car norm-vec) dt speed) 
+            dy (* (cdr norm-vec) dt speed)]
+          (move swarm dx dy))
       swarm))
 
 (fn get-by-id [swarms id]
