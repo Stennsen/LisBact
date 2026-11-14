@@ -41,7 +41,7 @@
                (if (= key :space)
                    (do
                      (print :KEY)
-                     (set-mode :mode-game)))
+                     (set-mode :map)))
                state)
  :mousemoved (fn [state _x _y _dx _dy _set-mode] state)
  :mousepressed (fn [state _key _scancode _is-repeat _set-mode] state)
