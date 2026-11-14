@@ -16,12 +16,14 @@
 
 (local {: merge} (require :lib.lume))
 
-(fn new [size x y is-selected]
+(local {: find} (require-mod! :core.utils))
+
+(fn new [id size x y is-selected]
   "creates a new swarm with given parameters"
   (let [x (if (not x) 0 x)
         y (if (not y) 0 y)
-        shape (collisions.new-circle x y size)]
-    {: size : x : y : is-selected : shape}))
+        shape (collisions.new-circle id x y size)]
+    { : id : size : x : y : is-selected : shape}))
 
 (fn render [swarm]
   (if swarm.is-selected
@@ -39,25 +41,8 @@
   (merge swarm {:target-x x :target-y y}))
 
 (fn check-mouse-in [swarm mouse-x mouse-y]
-(print swarm.x mouse-x mouse-y)
+  (set swarm.is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)))
 
-(local radius swarm.size)
-(local d-x (- mouse-x swarm.x))
-(local d-y (- mouse-y swarm.y))
+(fn get-by-id [swarms id] (find (fn [sw] (= id sw.id)) swarms))
 
-(local radius-2 (* radius radius))
-(local d-x-2 (* d-x d-x))
-(local d-y-2 (* d-y d-y))
-
-(if (>= radius-2 (+ d-x-2 d-y-2))
-(do
-(print "INSIDE")
-(set swarm.is-selected true)
-)
-(do
-(print "NOT INSIDE")
-(set swarm.is-selected false)
-))
-)
-
-{: new : render : move : set-target : check-mouse-in}
+{: new : render : move : set-target : check-mouse-in : get-by-id }

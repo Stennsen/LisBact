@@ -49,6 +49,10 @@ function Shape:init(t)
 	self._rotation = 0
 end
 
+function Shape:setId(id)
+	self._id = id
+end
+
 function Shape:moveTo(x,y)
 	local cx,cy = self:center()
 	self:move(x - cx, y - cy)
