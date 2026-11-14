@@ -15,6 +15,8 @@
 
 (local collisions (require-mod! :core.collisions))
 
+(local target-marker (require-mod! :core.target-marker))
+
 (local {: merge} (require :lib.lume))
 (local {: pprint : car : cdr : map } (require :core.utils))
 
@@ -28,6 +30,7 @@
     {: id : size : x : y : is-selected : shape}))
 
 (fn render [swarm]
+  (if (and swarm.target-x swarm.target-y) (target-marker.render swarm.target-x swarm.target-y))
   (if swarm.is-selected
       (do
         (love.graphics.setColor 1 0 1)
