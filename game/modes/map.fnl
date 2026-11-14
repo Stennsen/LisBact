@@ -6,6 +6,9 @@
 
 (local {: merge} (require :lib.lume))
 
+(fn update-swarm [sw dt]
+  (swarm.move sw (* 50 dt) (* 50 dt)))
+
 {:activate (fn _activate []
              ;; only called called once. Useful for loading in large assets
              ;; like images and music
@@ -17,8 +20,7 @@
            (swarm.render swarmO)))
  :update (fn _update [state dt _set-mode]
            (merge state
-                  {:swarms (icollect [_ swarmO (ipairs state.swarms)]
-                             (swarm.move swarmO (* 50 dt) (* 50 dt)))}))
+                  {:swarms (icollect [_ swarmO (ipairs state.swarms)] (update-swarm swarmO dt))}))
  :keyreleased (fn _keyreleased [state _key _code _is-repeat _set-mode] state)
  :keypressed (fn _keypressed [state _key _code _is-repeat _set-mode] state)
  :mousemoved (lambda [state _x _y _dx _dy _set-mode] state)
