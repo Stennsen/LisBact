@@ -1,4 +1,8 @@
-(local {: render} (require :core.swarm))
+(import-macros {: init-require!} :mod)
+
+(local require-mod! (init-require! :modes.map))
+
+(local {: render} (require-mod! :core.swarm))
 
 {:activate (fn _activate []
              ;; only called called once. Useful for loading in large assets
@@ -8,7 +12,7 @@
  :leave (fn _leave [state] state)
  :draw (fn _draw [state]
          (each [_ swarm (ipairs state.swarms)]
-            (render swarm)))
+            (swarm:render)))
  :update (fn _update [state _dt _set-mode]
             state)
  :keyreleased (fn _keyreleased [state _key _code _is-repeat _set-mode] state)
