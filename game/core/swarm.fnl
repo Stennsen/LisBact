@@ -4,18 +4,23 @@
 ;   :y number
 ;   :target-x number|nil
 ;   :target-y number|nil
+;   :is-selected boolean
 ; }
 
 (local {: merge} (require :lib.lume))
 
-(fn new [size x y]
+(fn new [size x y is-selected]
   "creates a new swarm with given parameters"
   (let [x (if (not x) 0 x)
         y (if (not y) 0 y)]
-    {: size : x : y}))
+    {: size : x : y : is-selected}))
 
 (fn render [swarm]
-  (love.graphics.circle :line swarm.x swarm.y swarm.size))
+  (if swarm.is-selected
+    (do (love.graphics.setColor 1 0 1) (love.graphics.circle :fill swarm.x swarm.y swarm.size))
+  )
+  (love.graphics.setColor 1 1 1) (love.graphics.circle :line swarm.x swarm.y swarm.size)
+)
 
 (fn move [swarm x-delta y-delta]
   "recieves a delta for x and y and returns a new Swarm with the updated coordinates"
@@ -36,9 +41,14 @@
 (local d-y-2 (* d-y d-y))
 
 (if (>= radius-2 (+ d-x-2 d-y-2))
+(do
 (print "INSIDE")
-; (print "NOT INSIDE")
+(set swarm.is-selected true)
 )
+(do
+(print "NOT INSIDE")
+(set swarm.is-selected false)
+))
 )
 
 {: new : render : move : set-target : check-mouse-in}
