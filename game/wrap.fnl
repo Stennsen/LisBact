@@ -6,7 +6,7 @@
 (local scale 1)
 
 ;; Used for defining start scene
-(var initial-state-mode-name :mode-group_test)
+(var initial-state-mode-name :mode-intro)
 
 (var state-mode nil)
 (var state-mode-name initial-state-mode-name)
@@ -96,12 +96,12 @@
       (if (and (love.keyboard.isDown "lctrl" "rctrl") (= key "r")) (reload-mode! state-mode-name))
       (set-state (state-mode.keyreleased state-state key code isrepeat set-mode)))))
 
-(fn love.keypressed [key code isrepeat] (set-state (state-mode.keypressed state-state key code isrepeat set-mode)))
+(fn love.keypressed [key code isrepeat] (set-state (call-mode-with-state :keypressed key code isrepeat set-mode)))
 
-(fn love.mousemoved [x y dx dy _is-touch] (set-state (state-mode.mousemoved state-state x y dx dy set-mode)))
+(fn love.mousemoved [x y dx dy _is-touch] (set-state (call-mode-with-state :mousemoved x y dx dy set-mode)))
 
-(fn love.mousepressed [key scancode isrepeat] (set-state (state-mode.mousepressed state-state key scancode isrepeat set-mode)))
+(fn love.mousepressed [key scancode isrepeat] (set-state (call-mode-with-state :mousepressed key scancode isrepeat set-mode)))
 
-(fn love.mousereleased [key scancode isrepeat] (set-state (state-mode.mousereleased state-state key scancode isrepeat set-mode)))
+(fn love.mousereleased [key scancode isrepeat] (set-state (call-mode-with-state :mousereleased key scancode isrepeat set-mode)))
 
 (set-mode initial-state-mode-name)
