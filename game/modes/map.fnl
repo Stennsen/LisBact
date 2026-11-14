@@ -5,9 +5,7 @@
 (local swarm (require-mod! :core.swarm))
 
 (local {: merge} (require :lib.lume))
-
-(fn update-swarm [sw dt]
-  (swarm.move sw (* 50 dt) (* 50 dt)))
+(local {: pprint} (require :core.utils))
 
 {:activate (fn _activate []
              ;; only called called once. Useful for loading in large assets
@@ -16,11 +14,14 @@
  :enter (fn _enter [state] state)
  :leave (fn _leave [state] state)
  :draw (fn _draw [state]
-         (each [_ swarmO (ipairs state.swarms)]
-           (swarm.render swarmO)))
+         (each [_ sw (ipairs state.swarms)]
+           (swarm.render sw)))
  :update (fn _update [state dt _set-mode]
-           (merge state
-                  {:swarms (icollect [_ swarmO (ipairs state.swarms)] (update-swarm swarmO dt))}))
+           (let [new-state (merge state
+                                  {:swarms (icollect [_ sw (ipairs state.swarms)]
+                                             (swarm.tick sw dt))})]
+             (pprint new-state)
+             new-state))
  :keyreleased (fn _keyreleased [state _key _code _is-repeat _set-mode] state)
  :keypressed (fn _keypressed [state _key _code _is-repeat _set-mode] state)
  :mousemoved (lambda [state _x _y _dx _dy _set-mode] state)
