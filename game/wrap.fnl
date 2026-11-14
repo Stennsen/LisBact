@@ -48,6 +48,7 @@
     (set state-mode-name new-mode-name)))
 
 (fn reload-module! [mod]
+    (each [k _v (pairs (get-dependencies mod))] (reload-module! k))
     (print (string.format "Reloading module %s" mod))
     (reset-dependencies mod)
     (let [old (require mod)
@@ -63,7 +64,6 @@
 
 (fn reload-mode! [mode]
   (let [mn (mode-name mode)]
-    (each [k _v (pairs (get-dependencies mn))] (reload-module! k))
     (reload-module! mn)))
 
 (fn draw-error [] (love.graphics.setFont debug-font)
