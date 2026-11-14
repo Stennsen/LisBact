@@ -17,11 +17,9 @@
          (each [_ sw (ipairs state.swarms)]
            (swarm.render sw)))
  :update (fn _update [state dt _set-mode]
-           (let [new-state (merge state
-                                  {:swarms (icollect [_ sw (ipairs state.swarms)]
-                                             (swarm.tick sw dt))})]
-             (pprint new-state)
-             new-state))
+           (merge state
+              {:swarms (icollect [_ sw (ipairs state.swarms)]
+                (swarm.tick sw dt))}))
  :keyreleased (fn _keyreleased [state _key _code _is-repeat _set-mode] state)
  :keypressed (fn _keypressed [state _key _code _is-repeat _set-mode] state)
  :mousemoved (lambda [state _x _y _dx _dy _set-mode] state)
