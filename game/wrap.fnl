@@ -29,8 +29,10 @@
 
 (macro call-mode-with-state [method & params]
   (let [fcall `(pcall ,(sym (.. :state-mode. method)) state-state ,(unpack params))]
-    `(let [(ret# val#) ,fcall] (if ret# val# (do (set-error val#) state-state))))
-  )
+    `(let [(ret# val#) ,fcall] (if ret# val# (do (set-error val#) state-state)))))
+
+(macro not-in-web [expr]
+  `(when (~= :Web (love.system.getOS)) ,expr))
 
 (fn set-mode [new-mode-name ...]
   (print new-mode-name)
@@ -61,7 +63,7 @@
   (love.graphics.print "Caught error:" 15 10)
   (love.graphics.print state-error 30 30)
   (love.graphics.setColor 1 1 1)
-  (love.graphics.print "r to reload current mode" 15 70)
+  (not-in-web (love.graphics.print "r to reload current mode" 15 70))
   (love.graphics.print "i to ignore the error" 15 90)
   (love.graphics.print "q to quit" 15 110))
 
@@ -76,8 +78,7 @@
   ;; the nearest filter allows you to get sharp pixel-art style scaling;
   ;; if you want perfect pixel alignment you can draw to canvas and
   ;; then draw that canvas scaled
-  (love.graphics.setDefaultFilter "nearest" "nearest")
-  (when (~= :Web (love.system.getOS)) (repl.start)))
+  (love.graphics.setDefaultFilter "nearest" "nearest"))
 
 (fn love.draw []
   (love.graphics.scale scale)
@@ -93,7 +94,7 @@
 (fn love.keyreleased [key code isrepeat]
   (if state-error (keyreleased-error key code)
     (do
-      (if (and (love.keyboard.isDown "lctrl" "rctrl") (= key "r")) (reload-mode! state-mode-name))
+      (not-in-web (if (and (love.keyboard.isDown "lctrl" "rctrl") (= key "r")) (reload-mode! state-mode-name)))
       (set-state (state-mode.keyreleased state-state key code isrepeat set-mode)))))
 
 (fn love.keypressed [key code isrepeat] (set-state (call-mode-with-state :keypressed key code isrepeat set-mode)))
