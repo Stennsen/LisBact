@@ -13,7 +13,6 @@
         delta (if (= (love.math.random 2) 1) 1 -1)]
     (target:setAmount (+ (target:getAmount) delta))))
 
-
 {:activate (fn _activate [])
  :enter (fn _enter [state] state)
  :leave (fn _leave [state] state)
@@ -23,11 +22,14 @@
     (powerUp:draw)
     (stat:draw x y))
  )
- :update (fn _update [state dt _set-mode] state)
+ :update (fn _update [state dt _set-mode]
+    (manager:update dt)
+    state)
  :keyreleased (fn _keyreleased [state _key _code _is-repeat _set-mode] state)
  :keypressed (fn _keypressed [state _key _code _is-repeat _set-mode] 
      (if (= _key :space) (randomStateChange))
      (if (= _key :t) (powerUp:applyToStats stat))
+     (if (= _key :p) (manager:consumeRandomPowerUp stat))
  state)
  :mousemoved (lambda [state _x _y _dx _dy _set-mode]
  state)

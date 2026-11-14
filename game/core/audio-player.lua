@@ -2,7 +2,9 @@ local AudioPlayer = {}
 AudioPlayer.__index = AudioPlayer
 
 function AudioPlayer:newMusicPlayer(filePath)
-  return AudioPlayer:new(filePath,"stream")
+  local music = AudioPlayer:new(filePath,"stream")
+  music.source:setLooping(true)
+  return music
 end
 
 function AudioPlayer:newSoundPlayer(filePath)
@@ -64,6 +66,17 @@ end
 
 function AudioPlayer:isPlaying()
   return self.source:isPlaying()
+end
+
+-- Stops playback and frees the underlying LÖVE source right away instead of
+-- waiting for the garbage collector. The player must not be used afterwards.
+function AudioPlayer:release()
+  if self.source == nil then
+    return
+  end
+  self.source:stop()
+  self.source:release()
+  self.source = nil
 end
 
 function AudioPlayer:randomizePitch()

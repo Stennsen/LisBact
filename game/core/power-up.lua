@@ -1,3 +1,5 @@
+local AudioPlayer = require("core/audio-player")
+
 local PowerUp = {}
 PowerUp.__index = PowerUp
 
@@ -10,12 +12,14 @@ function PowerUp:new (xPos, yPos, radius, color, stat, gain)
   powerup.radius = radius
   powerup.stat = stat
   powerup.gain = gain
+  powerup.sound = AudioPlayer:newSoundPlayer("assets/audiofiles/powerup-" .. stat .. ".wav")
+  powerup.destroyed = false
 
   return powerup
 end
 
 function PowerUp:applyToStats(stats)
-    if stats == nil then
+    if self.destroyed or stats == nil then
         return
     end
 
@@ -24,10 +28,28 @@ function PowerUp:applyToStats(stats)
         return
     end
 
+    self.sound:playOneShot()
     target:setAmount(target:getAmount() + self.gain)
 end
 
+function PowerUp:isPlayingSound()
+    return not self.destroyed and self.sound:isPlaying()
+end
+
+function PowerUp:destroy()
+    if self.destroyed then
+        return
+    end
+    self.destroyed = true
+    self.sound:release()
+    self.sound = nil
+end
+
 function PowerUp:draw()
+    if self.destroyed then
+        return
+    end
+
     local r, g, b, a = love.graphics.getColor()
 
     love.graphics.setColor(self.color)
