@@ -1,14 +1,11 @@
 ;; wraps love callbacks
 
-(local fennel (require :lib.fennel))
-(local repl (require :lib.stdio))
-
 (local { : get-dependencies : reset-dependencies } (require :mod-reflect))
 
 (local scale 1)
 
 ;; Used for defining start scene
-(var initial-state-mode-name :map)
+(local initial-state-mode-name :map)
 
 (var state-mode nil)
 (var state-mode-name initial-state-mode-name)

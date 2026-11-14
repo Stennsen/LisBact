@@ -1,19 +1,15 @@
-(local Swarm {})
-(set Swarm.__index Swarm)
-(set Swarm.__name :swarm)
-
-(fn Swarm.new [self size x y]
+(fn new [size x y]
   "creates a new swarm with given parameters"
   (let [x (if (not x) 0 x)
         y (if (not y) 0 y)]
-    (setmetatable {: size : x : y} self)))
+    {: size : x : y}))
 
-(fn Swarm.render [self]
-  (love.graphics.circle :line self.x self.y self.size))
+(fn render [swarm]
+  (love.graphics.print "ASDF" 10 10)
+  (love.graphics.circle :line swarm.x swarm.y swarm.size))
 
-(fn Swarm.move [self x-delta y-delta]
+(fn move [swarm x-delta y-delta]
   "recieves a delta for x and y and returns a new Swarm with the updated coordinates"
-  (Swarm:new self.size (+ self.x x-delta) (+ self.y y-delta)))
+  (new swarm.size (+ swarm.x x-delta) (+ swarm.y y-delta)))
 
-
-{: Swarm }
+{: new : render : move }
