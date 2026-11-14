@@ -18,7 +18,7 @@
 (local target-marker (require-mod! :core.target-marker))
 
 (local {: merge} (require :lib.lume))
-(local {: pprint : car : cdr : map } (require :core.utils))
+(local {: pprint : car : cdr : map} (require :core.utils))
 
 (local {: find} (require-mod! :core.utils))
 
@@ -30,7 +30,8 @@
     {: id : size : x : y : is-selected : shape}))
 
 (fn render [swarm]
-  (if (and swarm.target-x swarm.target-y) (target-marker.render swarm.target-x swarm.target-y))
+  (if (and swarm.target-x swarm.target-y)
+      (target-marker.render swarm.target-x swarm.target-y))
   (if swarm.is-selected
       (do
         (love.graphics.setColor 1 0 1)
@@ -54,9 +55,9 @@
             len-vec (math.sqrt (+ (* (car vec) (car vec))
                                   (* (cdr vec) (cdr vec))))
             norm-vec [(/ (car vec) len-vec) (/ (cdr vec) len-vec)]
-            dx (* (car norm-vec) dt speed) 
+            dx (* (car norm-vec) dt speed)
             dy (* (cdr norm-vec) dt speed)]
-          (move swarm dx dy))
+        (move swarm dx dy))
       swarm))
 
 (fn get-by-id [swarms id]
@@ -66,11 +67,11 @@
   "returns a swarm with the target coordinates set"
   (merge swarm {:target-x x :target-y y}))
 
-(fn handle-collisions [swarm swarms _dt] 
+(fn handle-collisions [swarm swarms _dt]
   (let [colls (collisions.collides-with swarm.shape)
         coll-swarms (map (fn [sh] (get-by-id swarms sh._id)) colls)]
-        (each [k _v (pairs coll-swarms)] (print k._id))
-        swarm))
+    (each [k _v (pairs coll-swarms)] (print k._id))
+    swarm))
 
 (fn tick [swarms swarm dt]
   (-> swarm
@@ -78,6 +79,7 @@
       (handle-collisions swarms dt)))
 
 (fn check-mouse-in [swarm mouse-x mouse-y]
-  (set swarm.is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)))
+  "takes a swarm and x/y coordinates of a point to be checked against"
+  (merge swarm {:is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)}))
 
 {: new : render : tick : set-target : check-mouse-in : get-by-id}
