@@ -21,6 +21,15 @@
 (fn cdr [cons]
   (. cons 2))
 
-(fn foreach [func tbl] (each [_k v (ipairs tbl)] (func v)))
+(fn foreach [func tbl]
+  (each [_k v (ipairs tbl)] (func v)))
 
-{ : pprint : find : map : pair-eq : car : cdr : foreach }
+(fn unset [tbl & keywords]
+  "takes a table and unsets the give &keywords for the returned table"
+  (let [new-tbl {}]
+    (each [k v (pairs tbl)]
+      (when (not (find (fn [el] (= k el)) keywords))
+        (tset new-tbl k v)))
+    new-tbl))
+
+{: pprint : find : map : pair-eq : car : cdr : unset : foreach}
