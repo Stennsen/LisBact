@@ -80,7 +80,6 @@
 
 (fn check-mouse-in [swarm mouse-x mouse-y]
   "takes a swarm and x/y coordinates of a point to be checked against"
-  (pprint
-  (merge swarm {:is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)})))
+  (merge swarm {:is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)}))
 
 {: new : render : tick : set-target : check-mouse-in : get-by-id}
