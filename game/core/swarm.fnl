@@ -9,8 +9,7 @@
     (setmetatable {: size : x : y} self)))
 
 (fn Swarm.render [self]
-  (love.graphics.circle :line self.x self.y self.size)
-  (love.graphics.print (tostring self.size) self.x self.y))
+  (love.graphics.circle :line self.x self.y self.size))
 
 (fn render [obj]
   "calls an objects render method"
