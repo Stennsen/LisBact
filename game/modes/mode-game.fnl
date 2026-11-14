@@ -6,6 +6,8 @@
 
 (local swarm (require-mod! :core.swarm))
 
+(local collisions (require-mod! :core.collisions))
+
 (local lume (require :lib.lume))
 
 (local countdown-time 300)

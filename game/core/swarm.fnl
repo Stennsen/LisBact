@@ -5,15 +5,23 @@
 ;   :target-x number|nil
 ;   :target-y number|nil
 ;   :is-selected boolean
+;   :shape Shape
 ; }
+
+(import-macros {: init-require!} :mod)
+
+(local require-mod! (init-require! :core.swarm))
+
+(local collisions (require-mod! :core.collisions))
 
 (local {: merge} (require :lib.lume))
 
 (fn new [size x y is-selected]
   "creates a new swarm with given parameters"
   (let [x (if (not x) 0 x)
-        y (if (not y) 0 y)]
-    {: size : x : y : is-selected}))
+        y (if (not y) 0 y)
+        shape (collisions.new-circle x y size)]
+    {: size : x : y : is-selected : shape}))
 
 (fn render [swarm]
   (if swarm.is-selected
@@ -24,7 +32,8 @@
 
 (fn move [swarm x-delta y-delta]
   "recieves a delta for x and y and returns a new Swarm with the updated coordinates"
-  (new swarm.size (+ swarm.x x-delta) (+ swarm.y y-delta)))
+  (collisions.move-circle swarm.shape x-delta y-delta)
+  (merge swarm { :x (+ swarm.x x-delta) :y (+ swarm.y y-delta) }))
 
 (fn set-target [swarm x y]
   (merge swarm {:target-x x :target-y y}))
