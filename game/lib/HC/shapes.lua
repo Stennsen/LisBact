@@ -53,6 +53,10 @@ function Shape:setId(id)
 	self._id = id
 end
 
+function Shape:getId()
+	return self._id
+end
+
 function Shape:moveTo(x,y)
 	local cx,cy = self:center()
 	self:move(x - cx, y - cy)

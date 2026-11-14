@@ -17,6 +17,8 @@
 
 (fn in-shape [shape x y] (shape:contains x y))
 
-(fn collides-with [shape] hc.collisions shape)
+(fn collides-with [shape] (hc.collisions shape))
 
-{ : new-circle : remove-circle : move-circle : in-shape : collides-with }
+(fn get-id [shape] (shape:getId))
+
+{ : new-circle : remove-circle : move-circle : in-shape : collides-with : get-id}

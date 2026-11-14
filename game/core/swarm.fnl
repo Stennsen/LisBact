@@ -61,16 +61,15 @@
       swarm))
 
 (fn get-by-id [swarms id]
-  (find (fn [sw] (= id sw._id)) swarms))
+  (find (fn [sw] (= id (collisions.get-id sw.shape))) swarms))
 
 (fn set-target [swarm x y]
   "returns a swarm with the target coordinates set"
   (merge swarm {:target-x x :target-y y}))
 
 (fn handle-collisions [swarm swarms _dt]
-  (let [colls (collisions.collides-with swarm.shape)
-        coll-swarms (map (fn [sh] (get-by-id swarms sh._id)) colls)]
-    (each [k _v (pairs coll-swarms)] (print k._id))
+  (let [colls (collisions.collides-with swarm.shape)]
+    (each [k v (pairs colls)] (print (collisions.get-id k)))
     swarm))
 
 (fn tick [swarms swarm dt]
