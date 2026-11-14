@@ -11,7 +11,7 @@
 (local big-font (love.graphics.setNewFont 48))
 (local small-font (love.graphics.setNewFont 16))
 
-(local title-offset-x 0)
+(var title-offset-x 0)
 
 ; (fn switch-mode [mode] (love.op mode))
 
@@ -24,11 +24,12 @@
  :draw (fn _draw [state]
          (let [[w h] [(love.window.getMode)]]
            (love.graphics.setFont big-font)
-           (love.graphics.print "Klammer Schwarm" 200 150)
+           (love.graphics.print "Klammer Schwarm" (+ 200 title-offset-x) 150)
            (love.graphics.setFont small-font)
            (love.graphics.print "Pressy SPACE to start!" 200 250)))
  :update (fn _update [state dt _set-mode]
-           (local new-time (+ state.time dt))
+           (local new-time (+ state.time dt)) ;  (set title-offset-x (* (* (math.sin (love.timer.getTime) 5) 20)))
+           (set title-offset-x (* (math.sin (* (love.timer.getTime) 5)) 20))
            (if (< countdown-time new-time)
                (do
                  (love.event.quit)
