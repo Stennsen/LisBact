@@ -1,4 +1,8 @@
-(local {: render} (require :core.swarm))
+(import-macros {: init-require!} :mod)
+
+(local require-mod! (init-require! :modes.map))
+
+(local {: render} (require-mod! :core.swarm))
 
 {:activate (fn _activate []
              ;; only called called once. Useful for loading in large assets

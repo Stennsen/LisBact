@@ -3,10 +3,12 @@
 (local fennel (require :lib.fennel))
 (local repl (require :lib.stdio))
 
+(local { : get-dependencies : reset-dependencies } (require :mod-reflect))
+
 (local scale 1)
 
 ;; Used for defining start scene
-(var initial-state-mode-name :mode-group_test)
+(var initial-state-mode-name :map)
 
 (var state-mode nil)
 (var state-mode-name initial-state-mode-name)
@@ -38,24 +40,31 @@
   (print new-mode-name)
   (if state-mode (set-state ((. state-mode :leave) state-state)))
   (let [mode (require (mode-name new-mode-name))]
-    (when (not (. activated-modes mode))
+    (when (not (. activated-modes new-mode-name))
       (mode.activate)
-      (tset activated-modes mode true))
+      (tset activated-modes new-mode-name true))
     (set-state ((. mode :enter) state-state))
     (set state-mode mode)
     (set state-mode-name new-mode-name)))
 
-(fn reload-mode! [mode]
-  (let [mn (mode-name mode) old (require mn)
-        _ (tset package.loaded mn nil)
-        new (require mn)]
+(fn reload-module! [mod]
+    (print (string.format "Reloading module %s" mod))
+    (reset-dependencies mod)
+    (let [old (require mod)
+        _ (tset package.loaded mod nil)
+        new (require mod)]
     (when (= (type new) :table)
       (each [k v (pairs new)]
         (tset old k v))
       (each [k _v (pairs old)]
         (when (not (. new k))
           (tset old k nil)))
-      (tset package.loaded mn old))))
+      (tset package.loaded mod old))))
+
+(fn reload-mode! [mode]
+  (let [mn (mode-name mode)]
+    (each [k _v (pairs (get-dependencies mn))] (reload-module! k))
+    (reload-module! mn)))
 
 (fn draw-error [] (love.graphics.setFont debug-font)
   (love.graphics.clear 0.5 0.5 0.5)

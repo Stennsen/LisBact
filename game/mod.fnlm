@@ -1,0 +1,9 @@
+(fn init-require! [self-name] 
+    `(do 
+        (if (not _G.mods-loaded) (tset _G :mods-loaded {}))
+        (tset (. _G.mods-loaded) ,self-name {})
+        (fn [mn#] 
+            (tset (. _G.mods-loaded ,self-name) mn# true)
+            (require mn#))))
+
+{ : init-require! }
