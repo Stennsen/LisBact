@@ -87,10 +87,17 @@
             (each [index value (ipairs groups)]
                 (love.graphics.setColor value.b_color )
                 (love.graphics.polygon :fill (unpack (offset_pol value.shape value.x value.y)))
-                (love.graphics.setColor value.o_color )
-                ; (print (unpack ( value.shape)))
-                (love.graphics.line (unpack (offset_pol (generate_outline value.shape) value.x value.y)))
                 
+                ; (print (unpack ( value.shape)))
+                (love.graphics.setLineJoin :bevel)
+                
+                (love.graphics.setColor value.o_color )
+                (love.graphics.setLineWidth 10)
+                (love.graphics.line (unpack (offset_pol (generate_outline value.shape) value.x value.y)))
+
+                (love.graphics.setColor [0 0 0] )
+                (love.graphics.setLineWidth 4)
+                (love.graphics.line (unpack (offset_pol (generate_outline value.shape) value.x value.y)))
             )
         ))
  :update (fn _update [state dt _set-mode] state)
