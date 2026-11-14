@@ -20,7 +20,7 @@
   "creates a new swarm with given parameters"
   (let [x (if (not x) 0 x)
         y (if (not y) 0 y)
-        shape (collisions.new-circle x y size)]
+        shape (collisions.new-circle 0 x y size)] ;; TODO: set id
     {: size : x : y : is-selected : shape}))
 
 (fn render [swarm]
@@ -39,25 +39,6 @@
   (merge swarm {:target-x x :target-y y}))
 
 (fn check-mouse-in [swarm mouse-x mouse-y]
-(print swarm.x mouse-x mouse-y)
-
-(local radius swarm.size)
-(local d-x (- mouse-x swarm.x))
-(local d-y (- mouse-y swarm.y))
-
-(local radius-2 (* radius radius))
-(local d-x-2 (* d-x d-x))
-(local d-y-2 (* d-y d-y))
-
-(if (>= radius-2 (+ d-x-2 d-y-2))
-(do
-(print "INSIDE")
-(set swarm.is-selected true)
-)
-(do
-(print "NOT INSIDE")
-(set swarm.is-selected false)
-))
-)
+  (set swarm.is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)))
 
 {: new : render : move : set-target : check-mouse-in}
