@@ -6,8 +6,8 @@
 #   packages.love        the raw .love file
 #   packages.web         $out/share/<name>-<ver>-web/ + $out/bin/serve-web launcher
 #   packages.webZip      the web build as a zip
-#   packages.win         $out/share/<name>-<ver>-win64/ with fused <name>.exe
-#   packages.winZip      the windows build as a zip
+#   packages.win         $out/bin/<name>.exe + dlls (self-contained), docs in share/
+#   packages.winZip      the windows build as a zip (one distributable folder)
 #   checks.game-loads    the packaged .love is precompiled lua with all entry points present
 #   apps.run             nix run .#run         (love on the game source)
 #   apps.serve-web       nix run .#serve-web   (serve the web build on :8000)
@@ -57,7 +57,7 @@
         };
         win = win.winApp // {
           meta = meta // {
-            description = "${config.title} Windows build: share/<name>-<ver>-win64 with a fused ${config.name}.exe";
+            description = "${config.title} Windows build: self-contained bin/ with fused ${config.name}.exe + dlls, docs in share/";
           };
         };
         winZip = win.winZip // {
