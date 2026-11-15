@@ -26,7 +26,7 @@
         (do
             (if (< (length state.enemies) state.enemy-management.max-enemies)
                 (do
-                    (print "spawn new enemy")
+                    ;(print "spawn new enemy")
                     (let [random-player-swarm (get-random-player-swarm state.swarms)]
                         (let [new-enemy (swarm.set-target (swarm.new 10 10 (love.math.random 10 1200) (love.math.random 10 800) false true) random-player-swarm.x random-player-swarm.y)]
                             (set new-state

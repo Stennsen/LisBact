@@ -5,6 +5,7 @@
 ;   :y number
 ;   :target-x number|nil
 ;   :target-y number|nil
+;   :is-hovered boolean
 ;   :is-selected boolean
 ;   :shape Shape
 ;   :update dt
@@ -34,10 +35,11 @@
         y (if (not y) 0 y)
         shape (collisions.new-circle id x y size)
         is-enemy (if (not is-enemy) false is-enemy)
-        stats (SwarmStats:new)
+        stats (SwarmStats:new is-enemy)
         cells (fcollect [_ 1 (stats:getUnitCount)]
-                (Cell:new size (random-color 1) (random-color)))]
-    {: id : size : x : y : is-selected : shape : stats : is-enemy : cells}
+                (Cell:new size (random-color 1) (random-color)))
+        is-hovered false]
+    {: id : size : x : y : is-hovered : is-selected : shape : stats : is-enemy : cells}
   )
 )
 
@@ -63,9 +65,14 @@
       (do
         (love.graphics.setColor 1 0 1)
         (love.graphics.circle :fill swarm.x swarm.y swarm.size)
+        ) swarm.is-hovered
+      (do
+        (love.graphics.setColor 0 1 0 0.5)
+        (love.graphics.circle :fill swarm.x swarm.y swarm.size)
         )
       )
     )
+    
   )
   (love.graphics.setColor 1 1 1)
   (love.graphics.circle :line swarm.x swarm.y swarm.size)
@@ -145,8 +152,12 @@
       (move-to-target dt)
       (handle-collisions swarms dt)))
 
+;; Returns boolean
+(fn is-in [swarm x y] (collisions.in-shape swarm.shape x y))
+
 (fn check-mouse-in [swarm mouse-x mouse-y]
   "takes a swarm and x/y coordinates of a point to be checked against"
-  (lume.merge swarm {:is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)}))
+  (lume.merge swarm {:is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)})
+  )
 
-{: new : render : tick : tick-enemy : set-target : check-mouse-in : get-by-id : postrender }
+{: new : render : tick : tick-enemy : set-target : is-in : check-mouse-in : get-by-id : postrender }

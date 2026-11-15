@@ -4,6 +4,13 @@ local WorldPowerUpManager = {}
 WorldPowerUpManager.__index = WorldPowerUpManager
 
 local statNames = {"attack", "defence", "speed", "unitCount", "health"}
+local statIcons = {
+    love.graphics.newImage("assets/icons/attack_r_64.png"),
+    love.graphics.newImage("assets/icons/defence_b_64.png"),
+    love.graphics.newImage("assets/icons/speed_g_64.png"),
+    love.graphics.newImage("assets/icons/count_y_64.png"),
+    love.graphics.newImage("assets/icons/health_r_64.png"),
+}
 
 function WorldPowerUpManager:new (spawnedPowerUps)
     local manager = setmetatable({}, self)
@@ -64,9 +71,12 @@ function WorldPowerUpManager:destroy()
 end
 
 function WorldPowerUpManager:draw()
+    local r, g, b, a = love.graphics.getColor()
+    love.graphics.setColor(1,1,1,1)
     for _, p in ipairs(self.powerUps) do
         p:draw()
     end
+    love.graphics.setColor(r, g, b, a)
 end
 
 return WorldPowerUpManager

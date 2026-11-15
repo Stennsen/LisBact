@@ -13,14 +13,23 @@ borderToWindow = 10
 gabBetweenIconAndStat = 10
 globalDrawPositionOffset = 10
 
-function SwarmStats:new ()
+function SwarmStats:new (isEnemy)
   local swarmStats = setmetatable({}, self)
 
-  swarmStats.attack = SwarmStat:new(math.random(1,2),10,attack)
-  swarmStats.defence = SwarmStat:new(math.random(1,2),10,defence)
-  swarmStats.speed = SwarmStat:new(math.random(1,2),10,speed)
-  swarmStats.unitCount = SwarmStat:new(math.random(4,5),10,count)
-  swarmStats.health = SwarmStat:new(10,10,health)
+  if isEnemy then
+    swarmStats.attack = SwarmStat:new(math.random(1,2),5,attack)
+    swarmStats.defence = SwarmStat:new(math.random(1,2),5,defence)
+    swarmStats.speed = SwarmStat:new(math.random(1,2),5,speed)
+    swarmStats.unitCount = SwarmStat:new(math.random(2,3),5,count)
+    swarmStats.health = SwarmStat:new(5,5,health)
+  else
+    swarmStats.attack = SwarmStat:new(math.random(4,5),10,attack)
+    swarmStats.defence = SwarmStat:new(math.random(4,5),10,defence)
+    swarmStats.speed = SwarmStat:new(math.random(4,5),10,speed)
+    swarmStats.unitCount = SwarmStat:new(math.random(4,5),10,count)
+    swarmStats.health = SwarmStat:new(10,10,health)
+  end 
+
 
   swarmStats.drawnStats = {
     swarmStats.attack,
