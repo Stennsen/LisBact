@@ -76,8 +76,7 @@
           )
  : keyreleased 
  : keypressed
- :mousemoved (fn [state x y dx dy _] 
-            (print x y)
+ :mousemoved (fn [state x y dx dy _]
             (merge state 
               {:swarms (map (fn [sw] 
               (set sw.is-hovered (swarm.is-in state sw x y))) state.swarms
