@@ -48,12 +48,10 @@
              ;; only called called once. Useful for loading in large assets
              ;; like images and music
              (love.graphics.setNewFont 30))
- :enter (fn _enter [state] (backgroundMusic:play)
-          state.physics.add-map-colliders
-          MAP.min-x
-          MAP.min-y
-          MAP.max-x
-          MAP.max-y)
+ :enter (fn _enter [state]
+          (backgroundMusic:play)
+          (state.physics.add-map-colliders MAP)
+          state)
  :leave (fn _leave [state] (backgroundMusic:stop) state)
  :draw (fn _draw [state]
          (background.predraw bg)
@@ -72,28 +70,30 @@
            (background.update bg MAP_SIZE MAP_SIZE dt)
            (state.physics.update dt)
            (-> state
-            (enemy-manager.update dt)
-            (merge
-                  { :camera (camera.update state.camera MAP dt)
-                    :swarms (map (fn [sw] (swarm.tick state sw dt)) state.swarms)
-                    :enemies (map (fn [sw] (swarm.tick state sw dt)) state.enemies)
-                             })))
+               (enemy-manager.update dt)
+               (merge {:camera (camera.update state.camera MAP dt)
+                       :swarms (map (fn [sw] (swarm.tick state sw dt))
+                                    state.swarms)
+                       :enemies (map (fn [sw] (swarm.tick state sw dt))
+                                     state.enemies)})))
  : keyreleased
  : keypressed
  :mousemoved (fn [state x y dx dy _]
-            ;(print x y)
-            ( merge state {:swarms (map (fn [sw]
-              (set sw.is-hovered (swarm.is-in state sw x y))) state.swarms
-            )})
-            (var hovered-swarm (icollect [_ v (ipairs state.swarms)]
-              (if v.is-hovered v nil)))
-            (if (= (length hovered-swarm) 1)
-              (do (set hovered-swarm (. hovered-swarm 1))
-              (set tooltip_draw {:swarm hovered-swarm :x x :y y}))
-              (set tooltip_draw nil))
-
-            state
- )
+               ;(print x y)
+               (merge state
+                      {:swarms (map (fn [sw]
+                                      (set sw.is-hovered
+                                           (swarm.is-in state sw x y)))
+                                    state.swarms)})
+               (var hovered-swarm
+                    (icollect [_ v (ipairs state.swarms)]
+                      (if v.is-hovered v nil)))
+               (if (= (length hovered-swarm) 1)
+                   (do
+                     (set hovered-swarm (. hovered-swarm 1))
+                     (set tooltip_draw {:swarm hovered-swarm : x : y}))
+                   (set tooltip_draw nil))
+               state)
  :mousepressed (fn [state sx sy button _is-touch _presses _set-mode]
                  (let [tf (camera.get-transform state.camera)
                        (x y) (tf:inverseTransformPoint sx sy)]
