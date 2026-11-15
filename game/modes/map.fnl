@@ -9,19 +9,21 @@
 (local background (require-mod! :core.background))
 (local camera (require-mod! :core.camera))
 
-(local bg (background.new))
 
-(local MOVE 60)
+(local MOVE 120)
+
+(local MAP_SIZE 2000)
+
+(local MAP {
+  :min-x 0
+  :min-y 0
+  :max-x 2000
+  :max-y 2000
+})
+
+(local bg (background.new MAP_SIZE MAP_SIZE))
 
 (fn keypressed [state key _code _is-repeat _set-mode] 
-          (case key
-            "down" (merge state { :camera (camera.with-move state.camera 0 (- MOVE)) })
-            "up" (merge state { :camera (camera.with-move state.camera 0 MOVE) })
-            "left" (merge state { :camera (camera.with-move state.camera MOVE 0) })
-            "right" (merge state { :camera (camera.with-move state.camera (- MOVE) 0) })
-            _ state))
-
- (fn keyreleased [state key _code _is-repeat _set-mode]  
           (case key
             "down" (merge state { :camera (camera.with-move state.camera 0 MOVE) })
             "up" (merge state { :camera (camera.with-move state.camera 0 (- MOVE)) })
@@ -29,6 +31,18 @@
             "right" (merge state { :camera (camera.with-move state.camera MOVE 0) })
             _ state))
 
+ (fn keyreleased [state key _code _is-repeat _set-mode]  
+          (case key
+            "down" (merge state { :camera (camera.with-move state.camera 0 (- MOVE)) })
+            "up" (merge state { :camera (camera.with-move state.camera 0 MOVE) })
+            "left" (merge state { :camera (camera.with-move state.camera MOVE 0) })
+            "right" (merge state { :camera (camera.with-move state.camera (- MOVE) 0) })
+            _ state))
+
+(fn mousemoved [state _x _y _dx _dy _set-mode] 
+  
+  state)
+  
 {:activate (fn _activate []
              ;; only called called once. Useful for loading in large assets
              ;; like images and music
@@ -36,21 +50,22 @@
  :enter (fn _enter [state] state)
  :leave (fn _leave [state] state)
  :draw (fn _draw [state]
-         (background.draw bg state)
+         (background.predraw bg)
          (love.graphics.push)
          (love.graphics.applyTransform (camera.get-transform state.camera))
+         (background.draw bg)
          (foreach swarm.render state.swarms)
          (foreach swarm.postrender state.swarms)
          (love.graphics.pop))
  :update (fn _update [state dt _set-mode]
-           (background.update bg state dt _set-mode)
+           (background.update bg MAP_SIZE MAP_SIZE dt)
            (merge state
-                  { :camera (camera.update state.camera dt)
+                  { :camera (camera.update state.camera MAP dt)
                     :swarms (icollect [_ sw (ipairs state.swarms)]
                              (swarm.tick state.swarms sw dt))}))
  : keyreleased 
  : keypressed
- :mousemoved (lambda [state _x _y _dx _dy _set-mode] state)
+ : mousemoved
  :mousepressed (fn [state sx sy button _is-touch _presses _set-mode]
                   (let [tf (camera.get-transform state.camera)
                         (x y) (tf:inverseTransformPoint sx sy)]
