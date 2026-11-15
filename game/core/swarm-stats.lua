@@ -7,6 +7,7 @@ attack = love.graphics.newImage("assets/icons/attack_r_64.png")
 defence = love.graphics.newImage("assets/icons/defence_b_64.png")
 count = love.graphics.newImage("assets/icons/count_y_64.png")
 speed = love.graphics.newImage("assets/icons/speed_g_64.png")
+icon_health = love.graphics.newImage("assets/icons/health_r_64.png")
 
 borderToWindow = 10
 gabBetweenIconAndStat = 10
@@ -19,7 +20,7 @@ function SwarmStats:new ()
   swarmStats.defence = SwarmStat:new(2,5,defence)
   swarmStats.speed = SwarmStat:new(2,5,speed)
   swarmStats.unitCount = SwarmStat:new(2,5,count)
-  swarmStats.health = SwarmStat:new(2,5)
+  swarmStats.health = SwarmStat:new(2,5, icon_health)
 
   swarmStats.allStats = {
     swarmStats.attack,
