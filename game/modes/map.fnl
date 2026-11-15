@@ -55,6 +55,7 @@
          (love.graphics.push)
          (love.graphics.applyTransform (camera.get-transform state.camera))
          (background.draw bg)
+         (state.world-power-up-manager:draw)
          (foreach swarm.render state.swarms)
          (foreach swarm.render state.enemies)
          (foreach swarm.postrender state.swarms)

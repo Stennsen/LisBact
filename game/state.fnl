@@ -4,6 +4,7 @@
 
 (local swarm (require-mod! :core.swarm))
 (local enemy-manager (require-mod! :core.enemy-manager))
+(local world-power-up-manager (require-mod! :core/world-power-up-manager))
 
 {:init (fn _init []
         (let [list-enemies [
@@ -19,5 +20,6 @@
           :camera { :x 0 :y 0 :mx 0 :my 0 }
           :enemies list-enemies
         ;   :enemy-management { :active-enemies (length list-enemies)}
-          :enemy-management { :max-enemies 20 :current-cooldown 0 :time-between-spawns 2.0}
+          :enemy-management { :max-enemies 20 :current-cooldown 0 :time-between-spawns 0.5}
+          :world-power-up-manager (world-power-up-manager:new 6)
           }))}
