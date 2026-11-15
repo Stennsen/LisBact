@@ -10,6 +10,8 @@
 (local background (require-mod! :core.background))
 (local camera (require-mod! :core.camera))
 
+(local audioPlayer (require :core/audio-player))
+(local backgroundMusic (audioPlayer:newMusicPlayer "assets/audiofiles/background-music.flac"))
 
 (local MOVE 120)
 
@@ -48,8 +50,8 @@
              ;; only called called once. Useful for loading in large assets
              ;; like images and music
              (love.graphics.setNewFont 30))
- :enter (fn _enter [state] state)
- :leave (fn _leave [state] state)
+ :enter (fn _enter [state] (backgroundMusic:play) state)
+ :leave (fn _leave [state] (backgroundMusic:stop) state)
  :draw (fn _draw [state]
          (background.predraw bg)
          (love.graphics.push)
