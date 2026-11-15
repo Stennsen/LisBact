@@ -20,22 +20,17 @@
 )
 
 (fn update [state dt]
-    ; (print "Update enemy manager " dt)
-    (var new-state state)
     (if (<= state.enemy-management.current-cooldown 0)
-        (if (< (length state.enemies) state.enemy-management.max-enemies) (let [random-player-swarm (get-random-player-swarm state.swarms)] (let [new-enemy
- (swarm.set-target (swarm.new state.physics 10 10 (love.math.random 10 1200) (love.math.random 10 800) false true) random-player-swarm.x random-player-swarm.y)] (set new-state (merge state {:enemies
- (concat state.enemies [new-enemy])
- :enemy-management
- (merge state.enemy-management {:current-cooldown new-state.enemy-management.time-between-spawns})})))))
-    )
-
-    (let [current-cooldown (- new-state.enemy-management.current-cooldown dt)]
-        (merge new-state {
-            :enemy-management (merge new-state.enemy-management {
+        (if (< (length state.enemies) state.enemy-management.max-enemies) 
+            (let [random-player-swarm (get-random-player-swarm state.swarms)
+                new-enemy (swarm.set-target (swarm.new state.physics 10 10 (love.math.random 10 1200) (love.math.random 10 800) false true) random-player-swarm.x random-player-swarm.y)]
+                merge state {:enemies (concat state.enemies [new-enemy])
+                                  :enemy-management (merge state.enemy-management {:current-cooldown state.enemy-management.time-between-spawns })})                ))
+    (let [current-cooldown (- state.enemy-management.current-cooldown dt)]
+        (merge state {
+            :enemy-management (merge state.enemy-management {
                 :current-cooldown current-cooldown })}
         )
-    )
-)
+    ))
 
 {: new : update }

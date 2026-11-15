@@ -65,13 +65,13 @@
  :update (fn _update [state dt _set-mode]
            (background.update bg MAP_SIZE MAP_SIZE dt)
            (state.physics.update dt)
-           (merge state 
+           (-> state
+            (enemy-manager.update dt)
+            (merge 
                   { :camera (camera.update state.camera MAP dt)
-                    :swarms (icollect [_ sw (ipairs state.swarms)]
-                             (swarm.tick state sw dt))
-                    :enemies state.enemies
-                             })
-          )
+                    :swarms (map (fn [sw] (swarm.tick state sw dt)) state.swarms)
+                    :enemies (map (fn [sw] (swarm.tick state sw dt)) state.enemies)
+                             })))
  : keyreleased 
  : keypressed
  :mousemoved (fn [state x y dx dy _]

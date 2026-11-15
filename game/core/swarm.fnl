@@ -28,6 +28,8 @@
 
 (local {: find} (require-mod! :core.utils))
 
+(local SPEED 2500)
+
 (fn new [physics id size x y is-selected is-enemy]
   "creates a new swarm with given parameters"
   (let [x (if (not x) 0 x)
@@ -93,7 +95,7 @@
 (fn has-reached-target? [swarm] 
   (and swarm.target-x swarm.target-y
     (let [dx (math.abs (- swarm.x swarm.target-x)) dy (math.abs (- swarm.y swarm.target-y))]
-      (and (< dx 1) (< dy 1))
+      (and (< dx 10) (< dy 10))
     )))
 
 (fn move [_state swarm x-delta y-delta]
@@ -118,7 +120,7 @@
   (if (has-reached-target? swarm)
     (stop-at-target state swarm)
     (if (and (not= swarm.target-x nil) (not= swarm.target-y nil))
-        (let [speed (* (swarm.stats:getSpeed) 10000)
+        (let [speed (* (swarm.stats:getSpeed) SPEED)
             source [(. swarm :x) (. swarm :y)]
             target [swarm.target-x swarm.target-y]
             vec [(- (car target) (car source)) (- (cdr target) (cdr source))]
