@@ -6,12 +6,14 @@
 #   packages.love        the raw .love file
 #   packages.web         $out/share/<name>-<ver>-web/ + $out/bin/serve-web launcher
 #   packages.webZip      the web build as a zip
+#   packages.win         $out/share/<name>-<ver>-win64/ with fused <name>.exe
+#   packages.winZip      the windows build as a zip
 #   checks.game-loads    the packaged .love is precompiled lua with all entry points present
 #   apps.run             nix run .#run         (love on the game source)
 #   apps.serve-web       nix run .#serve-web   (serve the web build on :8000)
 #
 # split into config.nix (reads game/conf.json), src.nix (source/constants),
-# love.nix (desktop), lovejs.nix (web toolchain), web.nix (web build)
+# love.nix (desktop), lovejs.nix (web toolchain), web.nix (web), windows.nix (win64)
 {
   perSystem =
     args@{ pkgs, lib, ... }:
@@ -21,6 +23,7 @@
       lovejs = import ./lovejs.nix (args // src);
       love = import ./love.nix (args // src);
       web = import ./web.nix (args // src // lovejs // love);
+      win = import ./windows.nix (args // src // love);
 
       meta = {
         license = lib.licenses.gpl3Only;
@@ -50,6 +53,16 @@
         webZip = web.webZip // {
           meta = meta // {
             description = "${config.title} web build as a zip";
+          };
+        };
+        win = win.winApp // {
+          meta = meta // {
+            description = "${config.title} Windows build: share/<name>-<ver>-win64 with a fused ${config.name}.exe";
+          };
+        };
+        winZip = win.winZip // {
+          meta = meta // {
+            description = "${config.title} Windows build as a zip (distribute the whole folder, the exe needs its dlls)";
           };
         };
         default = game;
