@@ -124,6 +124,21 @@
   (let [colls (collisions.collides-with swarm.shape)]
     (each [k v (pairs colls)] (do ))
     swarm))
+  
+(fn find-nearest-player [swarm swarms dt]
+  ; (let [player-distances (map )]
+  ; )
+  ; (if swarm.is-enemy
+    
+  ; )
+  swarm
+)
+
+(fn tick-enemy [player-swarms enemy dt]
+  (-> enemy
+      (find-nearest-player player-swarms dt)
+      (move-to-target dt)
+      (handle-collisions player-swarms dt)))
 
 (fn tick [swarms swarm dt]
   (-> swarm
@@ -134,4 +149,4 @@
   "takes a swarm and x/y coordinates of a point to be checked against"
   (lume.merge swarm {:is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)}))
 
-{: new : render : tick : set-target : check-mouse-in : get-by-id : postrender }
+{: new : render : tick : tick-enemy : set-target : check-mouse-in : get-by-id : postrender }

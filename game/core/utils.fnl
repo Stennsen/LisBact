@@ -44,4 +44,10 @@
    (math.random)
    (or a (math.random))])
 
+(fn get-distance-to [x1 y1 x2 y2]
+  (let [dx (- x2 x1) dy (- y2 y1)]
+    (love.math.sqrt dx dy)
+  )
+)
+
 {: pprint : find : map : pair-eq : car : cdr : unset : foreach : point-on-circle : random-color}

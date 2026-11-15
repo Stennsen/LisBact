@@ -69,7 +69,7 @@
                     :swarms (icollect [_ sw (ipairs state.swarms)]
                              (swarm.tick state.swarms sw dt))
                     :enemies (icollect [_ sw (ipairs state.enemies)]
-                             (swarm.tick state.enemies sw dt))
+                             (swarm.tick-enemy state.swarms sw dt))
                              }))
           )
  : keyreleased 
