@@ -85,7 +85,7 @@
            (background.update bg MAP_SIZE MAP_SIZE dt)
            (state.physics.update dt)
            (let [contacts (state.physics.get-contacts)
-                 state (enemy-manager.update (handle-contacts contacts state) dt)]
+                 state (enemy-manager.update (handle-contacts state contacts) dt)]
                (merge state {:camera (camera.update state.camera MAP dt)
                        :swarms (map (fn [sw] (swarm.tick state sw dt))
                                     state.swarms)
