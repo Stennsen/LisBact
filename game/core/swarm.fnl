@@ -132,7 +132,9 @@
     (each [k v (pairs colls)] (do ))
     swarm))
   
-(fn find-nearest-player [swarm swarms dt]
+(fn find-nearest-player [player-swarms enemy dt]
+  (local enemyPos [enemy.x enemy.y])
+  (each [k v (pairs player-swarms)]
   ; (let [player-distances (map )]
   ; )
   ; (if swarm.is-enemy
@@ -143,7 +145,7 @@
 
 (fn tick-enemy [player-swarms enemy dt]
   (-> enemy
-      (find-nearest-player player-swarms dt)
+      (local nearest (find-nearest-player player-swarms enemy dt))
       (move-to-target dt)
       (handle-collisions player-swarms dt)))
 
