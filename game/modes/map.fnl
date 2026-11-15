@@ -6,7 +6,7 @@
 (local enemy-manager (require-mod! :core.enemy-manager))
 
 (local {: merge} (require :lib.lume))
-(local {: pprint : map : foreach } (require :core.utils))
+(local {: pprint : map : foreach : unpack} (require :core.utils))
 (local background (require-mod! :core.background))
 (local camera (require-mod! :core.camera))
 
@@ -25,6 +25,7 @@
 })
 
 (local bg (background.new MAP_SIZE MAP_SIZE))
+(var tooltip_draw nil) ;{:swarm nil :x 0 :y 0})
 
 (fn keypressed [state key _code _is-repeat _set-mode] 
           (case key
@@ -61,6 +62,8 @@
          (foreach swarm.render state.swarms)
          (foreach swarm.render state.enemies)
          (foreach swarm.postrender state.swarms)
+         (if (not= tooltip_draw nil)
+         (tooltip_draw.swarm.stats:draw (+ tooltip_draw.x 20) (+ tooltip_draw.y 20)))
          (love.graphics.pop))
  :update (fn _update [state dt _set-mode]
            (background.update bg MAP_SIZE MAP_SIZE dt)
@@ -74,11 +77,18 @@
                              })))
  : keyreleased 
  : keypressed
- :mousemoved (fn [state x y dx dy _]
-            (merge state 
-              {:swarms (map (fn [sw] 
-              (set sw.is-hovered (swarm.is-in state sw x y))) state.swarms
-            )}) 
+ :mousemoved (fn [state x y dx dy _] 
+            ;(print x y)
+            ( merge state {:swarms (map (fn [sw] 
+              (set sw.is-hovered (swarm.is-in sw x y))) state.swarms
+            )})
+            (var hovered-swarm (icollect [_ v (ipairs state.swarms)]
+              (if v.is-hovered v nil)))
+            (if (= (length hovered-swarm) 1) 
+              (do (set hovered-swarm (. hovered-swarm 1))
+              (set tooltip_draw {:swarm hovered-swarm :x x :y y}))
+              (set tooltip_draw nil))
+            
             state
  )
  :mousepressed (fn [state sx sy button _is-touch _presses _set-mode]

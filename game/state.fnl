@@ -12,8 +12,8 @@
 {:init (fn _init []
         (let [list-enemies []]
          {:time 0
-          :swarms [(swarm.set-target (swarm.new physics 1 42 300 300 false) 10 10)
-                   (swarm.set-target (swarm.new physics 2 100 0 0 false) 1000 1000)]
+          :swarms [(swarm.set-target (swarm.new physics 1 32 300 300 false) 300 400)
+                   (swarm.set-target (swarm.new physics 2 32 400 300 false) 400 400)]
           :camera { :x 0 :y 0 :mx 0 :my 0 }
           : physics
           :enemies list-enemies

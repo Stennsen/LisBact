@@ -89,7 +89,7 @@
 )
 
 (fn postrender [swarm]
-  (if swarm.is-selected (swarm.stats:draw swarm.x swarm.y))
+
 )
 
 (fn has-reached-target? [swarm] 
