@@ -9,6 +9,7 @@
 ;   :shape Shape
 ;   :update dt
 ;   :stats SwarmStats
+;   :is-enemy boolean
 ; }
 
 (import-macros {: init-require!} :mod)
@@ -25,20 +26,34 @@
 
 (local {: find} (require-mod! :core.utils))
 
-(fn new [id size x y is-selected]
+(fn new [id size x y is-selected is-enemy]
   "creates a new swarm with given parameters"
   (let [x (if (not x) 0 x)
         y (if (not y) 0 y)
-        shape (collisions.new-circle id x y size)]
-    {: id : size : x : y : is-selected : shape :stats (SwarmStats:new)}))
+        shape (collisions.new-circle id x y size)
+        is-enemy (if (not is-enemy) false is-enemy)]
+    {: id : size : x : y : is-selected : shape :stats (SwarmStats:new) : is-enemy}))
 
 (fn render [swarm]
   (if (and swarm.target-x swarm.target-y)
       (target-marker.render swarm.target-x swarm.target-y))
-  (if swarm.is-selected
+  (if swarm.is-enemy
+    (do
+      (do
+       (love.graphics.setColor 0 0 0)
+        (love.graphics.circle :fill swarm.x swarm.y swarm.size)
+      )
+    )
+    (do
+    (if swarm.is-selected
       (do
         (love.graphics.setColor 1 0 1)
-        (love.graphics.circle :fill swarm.x swarm.y swarm.size)))
+        (love.graphics.circle :fill swarm.x swarm.y swarm.size)
+        )
+      )
+    )
+  )
+  
   (love.graphics.setColor 1 1 1)
   (love.graphics.circle :line swarm.x swarm.y swarm.size))
 
