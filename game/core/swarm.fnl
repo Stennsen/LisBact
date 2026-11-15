@@ -30,7 +30,7 @@
   "creates a new swarm with given parameters"
   (let [x (if (not x) 0 x)
         y (if (not y) 0 y)
-        shape (collisions.new-circle id x y size)
+        shape (collisions.new-circle id x y size) 
         is-enemy (if (not is-enemy) false is-enemy)]
     {: id : size : x : y : is-selected : shape :stats (SwarmStats:new) : is-enemy}))
 
@@ -42,6 +42,12 @@
       (do
        (love.graphics.setColor 0 0 0)
         (love.graphics.circle :fill swarm.x swarm.y swarm.size)
+      )
+      (love.graphics.setColor 0 1 0)
+      (let [hp (swarm.stats:getHealth)]
+        (let [hp-bar-width (* hp 10)]
+        (love.graphics.rectangle :fill (- swarm.x (/ hp-bar-width 2)) (- swarm.y 10) hp-bar-width 5)
+        )
       )
     )
     (do
