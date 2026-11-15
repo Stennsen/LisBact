@@ -45,6 +45,7 @@
          (love.graphics.pop))
  :update (fn _update [state dt _set-mode]
            (background.update bg state dt _set-mode)
+           (print state.enemy-management.active-enemies)
            (merge state
                   { :camera (camera.update state.camera dt)
                     :swarms (icollect [_ sw (ipairs state.swarms)]
