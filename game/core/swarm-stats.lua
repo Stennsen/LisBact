@@ -19,14 +19,14 @@ function SwarmStats:new ()
   swarmStats.attack = SwarmStat:new(math.random(1,2),5,attack)
   swarmStats.defence = SwarmStat:new(math.random(1,2),5,defence)
   swarmStats.speed = SwarmStat:new(math.random(1,2),5,speed)
-  swarmStats.unitCount = SwarmStat:new(math.random(1,2),5,count)
-  swarmStats.health = SwarmStat:new(math.random(1,2),5,health)
+  swarmStats.unitCount = SwarmStat:new(math.random(1,3),5,count)
+  swarmStats.health = SwarmStat:new(5,5,health)
 
   swarmStats.drawnStats = {
     swarmStats.attack,
     swarmStats.defence,
     swarmStats.speed,
-    swarmStats.unitCount
+    swarmStats.unitCount,
     swarmStats.health
   }
 
@@ -93,8 +93,8 @@ function SwarmStats:draw(x, y)
 
     local i = 0
     for index,stat in ipairs(self.drawnStats) do
-        local xPos = x + borderToWindow
-        local yPos = y + borderToWindow + (i * stat.icon:getHeight())
+        local xPos = x + (borderToWindow * 2)
+        local yPos = y + (borderToWindow * 2) + (i * stat.icon:getHeight())
         love.graphics.draw(stat.icon, xPos, yPos)
         stat:draw(xPos + stat.icon:getWidth() + gabBetweenIconAndStat, 
                     yPos + (stat.icon:getHeight() / 2))
