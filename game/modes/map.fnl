@@ -3,6 +3,7 @@
 (local require-mod! (init-require! :modes.map))
 
 (local swarm (require-mod! :core.swarm))
+(local enemy-manager (require-mod! :core.enemy-manager))
 
 (local {: merge} (require :lib.lume))
 (local {: pprint : map : foreach } (require :core.utils))
@@ -60,13 +61,16 @@
          (love.graphics.pop))
  :update (fn _update [state dt _set-mode]
            (background.update bg MAP_SIZE MAP_SIZE dt)
-           (print state.enemy-management.active-enemies)
-           (merge state
+          ;  (print state.enemy-management.active-enemies)
+          ; (set state (state.enemy-manager.update state))
+          (let [state (enemy-manager.update state dt)]
+           (merge state 
                   { :camera (camera.update state.camera MAP dt)
                     :swarms (icollect [_ sw (ipairs state.swarms)]
                              (swarm.tick state.swarms sw dt))
                     :enemies state.enemies
                              }))
+          )
  : keyreleased 
  : keypressed
  : mousemoved
