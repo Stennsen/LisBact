@@ -50,11 +50,12 @@
        (love.graphics.setColor 0 0 0)
         (love.graphics.circle :fill swarm.x swarm.y swarm.size)
       )
-      (love.graphics.setColor 0 1 0)
-      (let [hp (swarm.stats:getHealth)]
-        (let [hp-bar-width (* hp 5)]
-        (love.graphics.rectangle :fill (- swarm.x (/ hp-bar-width 2)) (- swarm.y 10) hp-bar-width 5)
-        )
+      (let [hp-max-bar-width (* (swarm.stats:getMaxHealth) 5)
+            hp-curr-bar-width (* (swarm.stats:getHealth) 5)]
+        (love.graphics.setColor 1 0 0)
+        (love.graphics.rectangle :fill (- swarm.x (/ hp-max-bar-width 2)) (- swarm.y 10) hp-max-bar-width 5)
+        (love.graphics.setColor 0 1 0)
+        (love.graphics.rectangle :fill (- swarm.x (/ hp-curr-bar-width 2)) (- swarm.y 10) hp-curr-bar-width 5)
       )
     )
     (do

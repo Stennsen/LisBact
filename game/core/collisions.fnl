@@ -8,7 +8,7 @@
 
 (fn new-circle [id x y size] 
     (let [c (hc.circle x y size) 
-          _ (c:setId id)] 
+          _ (c:setMeta { :type :swarm : id })] 
             c))
 
 (fn remove-circle [circle] (hc.remove circle))
@@ -19,6 +19,6 @@
 
 (fn collides-with [shape] (hc.collisions shape))
 
-(fn get-id [shape] (shape:getId))
+(fn get-meta [shape] (shape:getMeta))
 
-{ : new-circle : remove-circle : move-circle : in-shape : collides-with : get-id}
+{ : new-circle : remove-circle : move-circle : in-shape : collides-with : get-meta}
