@@ -49,12 +49,12 @@ function Shape:init(t)
 	self._rotation = 0
 end
 
-function Shape:setId(id)
-	self._id = id
+function Shape:setMeta(data)
+	self._metadata = data
 end
 
-function Shape:getId()
-	return self._id
+function Shape:getMeta()
+	return self._metadata
 end
 
 function Shape:moveTo(x,y)

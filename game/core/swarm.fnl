@@ -36,16 +36,10 @@
         shape (collisions.new-circle id x y size)
         is-enemy (if (not is-enemy) false is-enemy)
         stats (SwarmStats:new)
-        is_hovered false
-        ]
-    {: id : size : x : y : is_hovered : is-selected : shape : stats : is-enemy
-      :cells [
-        (Cell:new size (random-color 1) (random-color ))
-        (Cell:new size (random-color 1) (random-color ))
-        (Cell:new size (random-color 1) (random-color ))
-        (Cell:new size (random-color 1) (random-color ))
-        ]
-    }
+        cells (fcollect [_ 1 (stats:getUnitCount)]
+                (Cell:new size (random-color 1) (random-color)))
+        is-hovered false]
+    {: id : size : x : y : is-hovered : is-selected : shape : stats : is-enemy : cells}
   )
 )
 
@@ -57,6 +51,13 @@
       (do
        (love.graphics.setColor 0 0 0)
         (love.graphics.circle :fill swarm.x swarm.y swarm.size)
+      )
+      (let [hp-max-bar-width (* (swarm.stats:getMaxHealth) 5)
+            hp-curr-bar-width (* (swarm.stats:getHealth) 5)]
+        (love.graphics.setColor 1 0 0)
+        (love.graphics.rectangle :fill (- swarm.x (/ hp-max-bar-width 2)) (- swarm.y 10) hp-max-bar-width 5)
+        (love.graphics.setColor 0 1 0)
+        (love.graphics.rectangle :fill (- swarm.x (/ hp-curr-bar-width 2)) (- swarm.y 10) hp-curr-bar-width 5)
       )
     )
     (do
