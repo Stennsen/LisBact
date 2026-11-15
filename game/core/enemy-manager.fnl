@@ -22,7 +22,7 @@
         (do
             (if (< (length state.enemies) state.enemy-management.max-enemies)
                 (do
-                    (print "spawn new enemy")
+                    ;(print "spawn new enemy")
                     (let [new-enemy (swarm.new 10 10 (love.math.random 10 1200) (love.math.random 10 800) false true) ]
                         (set new-state
                             (merge state {
