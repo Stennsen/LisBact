@@ -64,10 +64,8 @@
          (love.graphics.pop))
  :update (fn _update [state dt _set-mode]
            (background.update bg MAP_SIZE MAP_SIZE dt)
-          ;  (print state.enemy-management.active-enemies)
-          ; (set state (state.enemy-manager.update state))
-          ;;(foreach (fn [sw] (pprint sw.fixture)) state.swarms)
-          (merge state 
+           (state.physics.update dt)
+           (merge state 
                   { :camera (camera.update state.camera MAP dt)
                     :swarms (icollect [_ sw (ipairs state.swarms)]
                              (swarm.tick state sw dt))

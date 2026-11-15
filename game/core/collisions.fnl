@@ -25,6 +25,8 @@
 
     (fn in-fixture [fixture x y] (fixture:testPoint x y))
 
-    { : new-circle : in-fixture : add-map-colliders }
+    (fn update [dt] (world:update dt))
+
+    { : new-circle : in-fixture : add-map-colliders : update }
   )
 )

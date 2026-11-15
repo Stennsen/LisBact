@@ -100,19 +100,25 @@
   "recieves a delta for x and y and returns a new Swarm with the updated coordinates"
   (let [
     fixture swarm.fixture
-    _ (pprint swarm)
     body (fixture:getBody)]
     (body:setLinearVelocity x-delta y-delta)
     swarm
   ))
 
+(fn stop-at-target [state swarm] 
+  (let [m (unset (lume.merge swarm { :x swarm.target-x :y swarm.target-y }) :target-x :target-y)
+        fixture swarm.fixture
+        body (fixture:getBody)] 
+        (body:setLinearVelocity 0 0)
+        m))
+
 (fn move-to-target [state swarm dt]
   "returns a new swarm nearing the target location"
   (if (not dt) (print "move-to-target: argument dt not set"))
   (if (has-reached-target? swarm)
-    (let [m (unset (lume.merge swarm { :x swarm.target-x :y swarm.target-y }) :target-x :target-y)] m)
+    (stop-at-target state swarm)
     (if (and (not= swarm.target-x nil) (not= swarm.target-y nil))
-        (let [speed (* (swarm.stats:getSpeed) 10)
+        (let [speed (* (swarm.stats:getSpeed) 10000)
             source [(. swarm :x) (. swarm :y)]
             target [swarm.target-x swarm.target-y]
             vec [(- (car target) (car source)) (- (cdr target) (cdr source))]
