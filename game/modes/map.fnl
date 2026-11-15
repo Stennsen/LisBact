@@ -69,9 +69,9 @@
  :update (fn _update [state dt _set-mode]
            (background.update bg MAP_SIZE MAP_SIZE dt)
            (state.physics.update dt)
-           (-> state
-               (enemy-manager.update dt)
-               (merge {:camera (camera.update state.camera MAP dt)
+           (let [state (enemy-manager.update state dt)
+                _ (print (length state.enemies))]
+               (merge state {:camera (camera.update state.camera MAP dt)
                        :swarms (map (fn [sw] (swarm.tick state sw dt))
                                     state.swarms)
                        :enemies (map (fn [sw] (swarm.tick state sw dt))
