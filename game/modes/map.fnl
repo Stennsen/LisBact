@@ -10,6 +10,8 @@
 (local background (require-mod! :core.background))
 (local camera (require-mod! :core.camera))
 
+(local audioPlayer (require :core/audio-player))
+(local backgroundMusic (audioPlayer:newMusicPlayer "assets/audiofiles/background-music.flac"))
 
 (local MOVE 120)
 
@@ -49,8 +51,8 @@
              ;; only called called once. Useful for loading in large assets
              ;; like images and music
              (love.graphics.setNewFont 30))
- :enter (fn _enter [state] state)
- :leave (fn _leave [state] state)
+ :enter (fn _enter [state] (backgroundMusic:play) state)
+ :leave (fn _leave [state] (backgroundMusic:stop) state)
  :draw (fn _draw [state]
          (background.predraw bg)
          (love.graphics.push)
@@ -65,16 +67,13 @@
          (love.graphics.pop))
  :update (fn _update [state dt _set-mode]
            (background.update bg MAP_SIZE MAP_SIZE dt)
-          ;  (print state.enemy-management.active-enemies)
-          ; (set state (state.enemy-manager.update state))
-          (let [state (enemy-manager.update state dt)]
+           (state.physics.update dt)
            (merge state 
                   { :camera (camera.update state.camera MAP dt)
                     :swarms (icollect [_ sw (ipairs state.swarms)]
-                             (swarm.tick state.swarms sw dt))
-                    :enemies (icollect [_ sw (ipairs state.enemies)]
-                             (swarm.tick state.enemies sw dt))
-                             }))
+                             (swarm.tick state sw dt))
+                    :enemies state.enemies
+                             })
           )
  : keyreleased 
  : keypressed
@@ -98,7 +97,7 @@
                     (case button
                       1 (merge state
                             {:swarms (map (fn [sw]
-                                            (swarm.check-mouse-in sw x y))
+                                            (swarm.check-mouse-in state sw x y))
                                           state.swarms)})
                       2 (merge state
                             {:swarms (map (fn [sw]

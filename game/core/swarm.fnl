@@ -7,7 +7,7 @@
 ;   :target-y number|nil
 ;   :is-hovered boolean
 ;   :is-selected boolean
-;   :shape Shape
+;   :fixture Fixture
 ;   :update dt
 ;   :stats SwarmStats
 ;   :cells Cells{} 
@@ -18,7 +18,6 @@
 
 (local require-mod! (init-require! :core.swarm))
 
-(local collisions (require-mod! :core.collisions))
 (local target-marker (require-mod! :core.target-marker))
 (local SwarmStats (require :core.swarm-stats))
 (local Cell (require :core.cell))
@@ -29,17 +28,17 @@
 
 (local {: find} (require-mod! :core.utils))
 
-(fn new [id size x y is-selected is-enemy]
+(fn new [physics id size x y is-selected is-enemy]
   "creates a new swarm with given parameters"
   (let [x (if (not x) 0 x)
         y (if (not y) 0 y)
-        shape (collisions.new-circle id x y size)
+        fixture (physics.new-circle id x y size)
         is-enemy (if (not is-enemy) false is-enemy)
-        stats (SwarmStats:new)
+        stats (SwarmStats:new is-enemy)
         cells (fcollect [_ 1 (stats:getUnitCount)]
                 (Cell:new size (random-color 1) (random-color)))
         is-hovered false]
-    {: id : size : x : y : is-hovered : is-selected : shape : stats : is-enemy : cells}
+    {: id : size : x : y : is-hovered : is-selected : fixture : stats : is-enemy : cells}
   )
 )
 
@@ -97,18 +96,29 @@
       (and (< dx 1) (< dy 1))
     )))
 
-(fn move [swarm x-delta y-delta]
+(fn move [_state swarm x-delta y-delta]
   "recieves a delta for x and y and returns a new Swarm with the updated coordinates"
-  (collisions.move-circle swarm.shape x-delta y-delta)
-  (lume.merge swarm {:x (+ swarm.x x-delta) :y (+ swarm.y y-delta)}))
+  (let [
+    fixture swarm.fixture
+    body (fixture:getBody)]
+    (body:setLinearVelocity x-delta y-delta)
+    swarm
+  ))
 
-(fn move-to-target [swarm dt]
+(fn stop-at-target [state swarm] 
+  (let [m (unset (lume.merge swarm { :x swarm.target-x :y swarm.target-y }) :target-x :target-y)
+        fixture swarm.fixture
+        body (fixture:getBody)] 
+        (body:setLinearVelocity 0 0)
+        m))
+
+(fn move-to-target [state swarm dt]
   "returns a new swarm nearing the target location"
   (if (not dt) (print "move-to-target: argument dt not set"))
   (if (has-reached-target? swarm)
-    (let [m (unset (lume.merge swarm { :x swarm.target-x :y swarm.target-y }) :target-x :target-y)] m)
+    (stop-at-target state swarm)
     (if (and (not= swarm.target-x nil) (not= swarm.target-y nil))
-        (let [speed (* (swarm.stats:getSpeed) 10)
+        (let [speed (* (swarm.stats:getSpeed) 10000)
             source [(. swarm :x) (. swarm :y)]
             target [swarm.target-x swarm.target-y]
             vec [(- (car target) (car source)) (- (cdr target) (cdr source))]
@@ -117,32 +127,25 @@
             norm-vec [(/ (car vec) len-vec) (/ (cdr vec) len-vec)]
             dx (* (car norm-vec) dt speed)
             dy (* (cdr norm-vec) dt speed)]
-          (move swarm dx dy))
+          (move state swarm dx dy))
         swarm)))
-
-(fn get-by-id [swarms id]
-  (find (fn [sw] (= id (collisions.get-id sw.shape))) swarms))
 
 (fn set-target [swarm x y]
   "returns a swarm with the target coordinates set"
   (lume.merge swarm {:target-x x :target-y y}))
 
-(fn handle-collisions [swarm swarms _dt]
-  (let [colls (collisions.collides-with swarm.shape)]
-    (each [k v (pairs colls)] (do ))
-    swarm))
+(fn update-position [swarm]
+  (let [body (swarm.fixture:getBody)]
+    (lume.merge swarm { :x (body:getX) :y (body:getY) })
+  ))
 
-(fn tick [swarms swarm dt]
-  (-> swarm
-      (move-to-target dt)
-      (handle-collisions swarms dt)))
+(fn tick [state swarm dt]
+  (update-position (move-to-target state swarm dt)))
 
-;; Returns boolean
-(fn is-in [swarm x y] (collisions.in-shape swarm.shape x y))
-
-(fn check-mouse-in [swarm mouse-x mouse-y]
+(fn check-mouse-in [state swarm mouse-x mouse-y]
   "takes a swarm and x/y coordinates of a point to be checked against"
-  (lume.merge swarm {:is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)})
-  )
+  (lume.merge swarm {:is-selected (state.physics.in-fixture swarm.fixture mouse-x mouse-y)}))
 
-{: new : render : tick : set-target : is-in : check-mouse-in : get-by-id : postrender }
+(fn is-in [state swarm mouse-x mouse-y] (state.physics.in-fixture swarm.fixture mouse-x mouse-y))
+
+{: new : render : tick : set-target : check-mouse-in : postrender : is-in }

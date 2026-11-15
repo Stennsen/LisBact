@@ -1,24 +1,32 @@
 (import-macros {: init-require!} :mod)
 
-(local hc (require :lib.HC))
-
 (local require-mod! (init-require! :core.collisions))
 
 (local {: find : pair-eq } (require-mod! :core.utils))
 
-(fn new-circle [id x y size] 
-    (let [c (hc.circle x y size) 
-          _ (c:setMeta { :type :swarm : id })] 
-            c))
+(fn []
+  (let [world (love.physics.newWorld 0 0 true)]
+    (fn new-circle [id x y size]
+      (let [circle (love.physics.newCircleShape size)
+            body (love.physics.newBody world x y :dynamic)]
+            (love.physics.newFixture body circle)))
 
-(fn remove-circle [circle] (hc.remove circle))
+    (fn create-collider [x y w h] 
+      (let [shape (love.physics.newEdgeShape x y (+ x w) (+ y h))
+            body (love.physics.newBody world x y :static)]
+            (love.physics.newFixture body shape)))
 
-(fn move-circle [circle dx dy] (circle:move dx dy))
+    (fn add-map-colliders [{ : min-x : min-y : max-x : max-y }]
+        (let [xsize (- max-x min-x) ysize (- max-y min-y)]
+          (create-collider (- min-x 10) (- min-y 10) (+ xsize 20) 10)
+          (create-collider (- min-x 10) (- min-y 10) 10 (+ ysize 20))
+          (create-collider max-x (- min-y 10) 10 (+ ysize 20))
+          (create-collider (- min-x 10) max-y (+ xsize 20) 10)))
 
-(fn in-shape [shape x y] (shape:contains x y))
+    (fn in-fixture [fixture x y] (fixture:testPoint x y))
 
-(fn collides-with [shape] (hc.collisions shape))
+    (fn update [dt] (world:update dt))
 
-(fn get-meta [shape] (shape:getMeta))
-
-{ : new-circle : remove-circle : move-circle : in-shape : collides-with : get-meta}
+    { : new-circle : in-fixture : add-map-colliders : update }
+  )
+)
