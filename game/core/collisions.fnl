@@ -21,6 +21,8 @@
           fixture
         ))
 
+    (fn destroy [fixture] (fixture:destroy))
+
     (fn add-map-colliders [{: min-x : min-y : max-x : max-y}]
       (let [xsize (- max-x min-x)
             ysize (- max-y min-y)]
@@ -35,4 +37,4 @@
 
     (fn get-contacts [] (world:getContacts))
 
-    {: new-circle : in-fixture : add-map-colliders : update : get-contacts }))
+    {: new-circle : in-fixture : add-map-colliders : update : get-contacts : destroy }))

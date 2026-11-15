@@ -164,10 +164,15 @@
 ;   (let [swarm-after-ai (enemy-ai state swarm dt)]
 ;     (update-position (move-to-target state swarm-after-ai dt))))
 
+(fn is-dead? [sw] (<= (sw.stats:getHealth) 0))
+
 (fn tick [state swarm dt]
-  (let [swarm-after-ai (enemy-ai state swarm dt)]
-    (update-position (move-to-target state swarm-after-ai dt)))
-  )
+  (if (is-dead? swarm) 
+    (do 
+      (state.physics.destroy swarm.fixture)
+      nil)
+    (let [swarm-after-ai (enemy-ai state swarm dt)]
+      (update-position (move-to-target state swarm-after-ai dt)))))
 
 (fn check-mouse-in [state swarm mouse-x mouse-y]
   "takes a swarm and x/y coordinates of a point to be checked against"
