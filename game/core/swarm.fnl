@@ -44,7 +44,7 @@
 )
 
 (fn render [swarm]
-  (if (and swarm.target-x swarm.target-y)
+  (if (and (and swarm.target-x swarm.target-y (not swarm.is-enemy)))
       (target-marker.render swarm.target-x swarm.target-y))
   (if swarm.is-enemy
     (do

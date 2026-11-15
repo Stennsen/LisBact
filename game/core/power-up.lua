@@ -49,7 +49,11 @@ function PowerUp:draw()
     if self.destroyed then
         return
     end
-    love.graphics.draw(icon,  self.xPos, self.yPos)
+
+	local width  = icon:getWidth()
+	local height = icon:getHeight()
+	local angle  = love.timer.getTime() * 2*math.pi / 2.5 -- Rotate one turn per 2.5 seconds.
+    love.graphics.draw(icon, self.xPos, self.yPos, angle, 0.25,0.25, width/2, height/2)
 end
 
 return PowerUp

@@ -55,6 +55,7 @@
          (love.graphics.push)
          (love.graphics.applyTransform (camera.get-transform state.camera))
          (background.draw bg)
+         (state.world-power-up-manager:draw)
          (foreach swarm.render state.swarms)
          (foreach swarm.render state.enemies)
          (foreach swarm.postrender state.swarms)
@@ -68,7 +69,8 @@
                   { :camera (camera.update state.camera MAP dt)
                     :swarms (icollect [_ sw (ipairs state.swarms)]
                              (swarm.tick state.swarms sw dt))
-                    :enemies state.enemies
+                    :enemies (icollect [_ sw (ipairs state.enemies)]
+                             (swarm.tick state.enemies sw dt))
                              }))
           )
  : keyreleased 

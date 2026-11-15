@@ -71,9 +71,12 @@ function WorldPowerUpManager:destroy()
 end
 
 function WorldPowerUpManager:draw()
+    local r, g, b, a = love.graphics.getColor()
+    love.graphics.setColor(1,1,1,1)
     for _, p in ipairs(self.powerUps) do
         p:draw()
     end
+    love.graphics.setColor(r, g, b, a)
 end
 
 return WorldPowerUpManager
