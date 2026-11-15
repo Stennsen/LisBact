@@ -19,12 +19,20 @@
     (print "enemy-manager:new")
 )
 
+(var next-id 100)
+
+(fn get-next-id []
+    (set next-id (+ next-id 1))
+    ; (print next-id)
+    (- next-id 1)
+)
+
 (fn update [state dt]
     (if (and 
             (<= state.enemy-management.current-cooldown 0)
             (< (length state.enemies) state.enemy-management.max-enemies))
         (let [random-player-swarm (get-random-player-swarm state.swarms)
-                new-enemy (swarm.set-target (swarm.new state.physics 10 10 (love.math.random 10 1200) (love.math.random 10 800) false true) random-player-swarm.x random-player-swarm.y)
+                new-enemy (swarm.set-target (swarm.new state.physics (get-next-id) 10 (love.math.random 10 1200) (love.math.random 10 800) false true) random-player-swarm.x random-player-swarm.y)
                 new-enemies (concat state.enemies [new-enemy])]
                 (merge state {
                     :enemies new-enemies
