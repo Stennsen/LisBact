@@ -7,7 +7,7 @@ local statNames = {"attack", "defence", "speed", "unitCount", "health"}
 local statIcons = {
     love.graphics.newImage("assets/icons/attack_r_64.png"),
     love.graphics.newImage("assets/icons/defence_b_64.png"),
-    love.graphics.newImage("assets/icons/speed_g_64.png")
+    love.graphics.newImage("assets/icons/speed_g_64.png"),
     love.graphics.newImage("assets/icons/count_y_64.png"),
     love.graphics.newImage("assets/icons/health_r_64.png"),
 }
