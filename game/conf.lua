@@ -1,6 +1,6 @@
 json = require "lib.json"
 
-local conf_json = io.open("conf.json", "r"):read("a")
+local conf_json = love.filesystem.read("conf.json")
 local conf = {}
 if conf_json then
    conf = json.decode(conf_json)
