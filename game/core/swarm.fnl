@@ -67,7 +67,7 @@
         (love.graphics.circle :fill swarm.x swarm.y swarm.size)
         ) swarm.is-hovered
       (do
-        (love.graphics.setColor 1 1 1 0.5)
+        (love.graphics.setColor 0 1 0 0.5)
         (love.graphics.circle :fill swarm.x swarm.y swarm.size)
         )
       )
@@ -137,8 +137,12 @@
       (move-to-target dt)
       (handle-collisions swarms dt)))
 
+;; Returns boolean
+(fn is-in [swarm x y] (collisions.in-shape swarm.shape x y))
+
 (fn check-mouse-in [swarm mouse-x mouse-y]
   "takes a swarm and x/y coordinates of a point to be checked against"
-  (lume.merge swarm {:is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)}))
+  (lume.merge swarm {:is-selected (collisions.in-shape swarm.shape mouse-x mouse-y)})
+  )
 
-{: new : render : tick : set-target : check-mouse-in : get-by-id : postrender }
+{: new : render : tick : set-target : is-in : check-mouse-in : get-by-id : postrender }

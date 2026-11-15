@@ -73,7 +73,14 @@
           )
  : keyreleased 
  : keypressed
- : mousemoved
+ :mousemoved (fn [state x y dx dy _] 
+            (print x y)
+            (merge state 
+              {:swarms (map (fn [sw] 
+              (set sw.is-hovered (swarm.is-in sw x y))) state.swarms
+            )}) 
+            state
+ )
  :mousepressed (fn [state sx sy button _is-touch _presses _set-mode]
                   (let [tf (camera.get-transform state.camera)
                         (x y) (tf:inverseTransformPoint sx sy)]
