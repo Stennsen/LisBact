@@ -17,7 +17,6 @@
           :camera { :x 0 :y 0 :mx 0 :my 0 }
           : physics
           :enemies list-enemies
-        ;   :enemy-management { :active-enemies (length list-enemies)}
-          :enemy-management { :max-enemies 20 :current-cooldown 0 :time-between-spawns 0.5}
+          :enemy-management { :max-enemies 20 :current-cooldown 1 :time-between-spawns 0.5}
           :world-power-up-manager (world-power-up-manager:new 6)
           }))}
