@@ -4,8 +4,10 @@
 #
 #   packages.game        $out/bin/game.love + $out/bin/<name> launcher (default)
 #   packages.love        the raw .love file
-#   packages.web         $out/share/<name>-<ver>-web/ + $out/bin/serve-web launcher
-#   packages.webZip      the web build as a zip
+#   packages.web         release love.js build (fast, needs COOP/COEP): share/ + bin/serve-web
+#   packages.webZip      the release web build as a zip
+#   packages.webCompat   compat love.js build (-c, slower, no COOP/COEP needed)
+#   packages.webCompatZip  the compat web build as a zip
 #   packages.win         $out/bin/<name>.exe + dlls (self-contained), docs in share/
 #   packages.winZip      the windows build as a zip (one distributable folder)
 #   checks.game-loads    the packaged .love is precompiled lua with all entry points present
@@ -47,12 +49,22 @@
         };
         web = web.webApp // {
           meta = meta // {
-            description = "${config.title} web build (love.js): share/<name>-<ver>-web plus a serve-web launcher";
+            description = "${config.title} web build (love.js release runtime, fast): share/<name>-<ver>-web plus a serve-web launcher";
           };
         };
         webZip = web.webZip // {
           meta = meta // {
-            description = "${config.title} web build as a zip";
+            description = "${config.title} web build (release runtime) as a zip";
+          };
+        };
+        webCompat = web.webAppCompat // {
+          meta = meta // {
+            description = "${config.title} web build (love.js compat runtime, slower, works without COOP/COEP headers)";
+          };
+        };
+        webCompatZip = web.webCompatZip // {
+          meta = meta // {
+            description = "${config.title} web build (compat runtime) as a zip";
           };
         };
         win = win.winApp // {
