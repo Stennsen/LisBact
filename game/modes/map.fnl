@@ -73,14 +73,24 @@
 (fn update-swarm [state id is-enemy updater]
   (if is-enemy (update-enemy state id updater) (update-own state id updater)))
 
+(fn make-combat-updater [opponent dt]
+  (fn [sw] 
+    (let [atk (opponent.stats:getAttack) 
+          oldHealth (sw.stats:getHealth)
+          newHealth (- oldHealth (* atk dt))]
+    (sw.stats:setHealth newHealth) 
+    sw))
+)
+
 (fn handle-contact [state contact dt] 
   (let [(fixture1 fixture2) (contact:getFixtures)
         ud1 (fixture1:getUserData)
         ud2 (fixture2:getUserData)
         sw1 (get-by-id state ud1.id ud1.is-enemy)
-        sw2 (get-by-id state ud2.id ud2.is-enemy) 
-        ]
-    state))
+        sw2 (get-by-id state ud2.id ud2.is-enemy)
+        state (update-swarm state ud1.id ud1.is-enemy (make-combat-updater sw2 dt))
+        state (update-swarm state ud2.id ud2.is-enemy (make-combat-updater sw1 dt))] 
+        state))
 
 (fn handle-contacts [state contacts dt] 
   (let [relevant-contacts (map filter-contact contacts)]
