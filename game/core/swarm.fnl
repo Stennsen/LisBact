@@ -9,6 +9,7 @@
 ;   :shape Shape
 ;   :update dt
 ;   :stats SwarmStats
+;   :cells Cells{} 
 ;   :is-enemy boolean
 ; }
 
@@ -19,10 +20,11 @@
 (local collisions (require-mod! :core.collisions))
 (local target-marker (require-mod! :core.target-marker))
 (local SwarmStats (require :core.swarm-stats))
+(local Cell (require :core.cell))
 
 (local lume (require :lib.lume))
 
-(local {: pprint : car : cdr : map : unset} (require :core.utils))
+(local {: pprint : car : cdr : map : unset : point-on-circle : random-color} (require :core.utils))
 
 (local {: find} (require-mod! :core.utils))
 
@@ -30,9 +32,14 @@
   "creates a new swarm with given parameters"
   (let [x (if (not x) 0 x)
         y (if (not y) 0 y)
-        shape (collisions.new-circle id x y size) 
-        is-enemy (if (not is-enemy) false is-enemy)]
-    {: id : size : x : y : is-selected : shape :stats (SwarmStats:new) : is-enemy}))
+        shape (collisions.new-circle id x y size)
+        is-enemy (if (not is-enemy) false is-enemy)
+        stats (SwarmStats:new)
+        cells (fcollect [_ 1 (stats:getUnitCount)]
+                (Cell:new size (random-color 1) (random-color)))]
+    {: id : size : x : y : is-selected : shape : stats : is-enemy : cells}
+  )
+)
 
 (fn render [swarm]
   (if (and swarm.target-x swarm.target-y)
@@ -59,12 +66,22 @@
       )
     )
   )
-  
   (love.graphics.setColor 1 1 1)
-  (love.graphics.circle :line swarm.x swarm.y swarm.size))
+  (love.graphics.circle :line swarm.x swarm.y swarm.size)
+  (let [cCount (length swarm.cells)]
+    (var anglePerCell (/ (* math.pi 2) cCount))
+    (each [key value (pairs swarm.cells)]
+      (local angle (* anglePerCell key))
+      (local size (* swarm.size (math.cos (love.timer:getTime))))
+      (local [xP yP] (point-on-circle swarm.x swarm.y size angle))
+      (value:draw xP yP)
+    )
+  )
+)
 
 (fn postrender [swarm]
-  (if swarm.is-selected (swarm.stats:draw swarm.x swarm.y)))
+  (if swarm.is-selected (swarm.stats:draw swarm.x swarm.y))
+)
 
 (fn has-reached-target? [swarm] 
   (and swarm.target-x swarm.target-y
