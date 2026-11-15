@@ -15,8 +15,8 @@
                     ; (swarm.new 7 10 200 400 false true)
                     ]]
          {:time 0
-          :swarms [(swarm.set-target (swarm.new 1 42 300 300 false) 10 10)
-                   (swarm.set-target (swarm.new 2 100 0 0 false) 1000 1000)]
+          :swarms [(swarm.set-target (swarm.new 1 32 300 300 false) 10 10)
+                   (swarm.set-target (swarm.new 2 32 400 300 false) 1000 1000)]
           :camera { :x 0 :y 0 :mx 0 :my 0 }
           :enemies list-enemies
         ;   :enemy-management { :active-enemies (length list-enemies)}
