@@ -80,7 +80,7 @@
  :mousemoved (fn [state x y dx dy _] 
             ;(print x y)
             ( merge state {:swarms (map (fn [sw] 
-              (set sw.is-hovered (swarm.is-in sw x y))) state.swarms
+              (set sw.is-hovered (swarm.is-in state sw x y))) state.swarms
             )})
             (var hovered-swarm (icollect [_ v (ipairs state.swarms)]
               (if v.is-hovered v nil)))
