@@ -42,7 +42,7 @@
 )
 
 (fn render [swarm]
-  (if (and swarm.target-x swarm.target-y)
+  (if (and (and swarm.target-x swarm.target-y (not swarm.is-enemy)))
       (target-marker.render swarm.target-x swarm.target-y))
   (if swarm.is-enemy
     (do
@@ -52,7 +52,7 @@
       )
       (love.graphics.setColor 0 1 0)
       (let [hp (swarm.stats:getHealth)]
-        (let [hp-bar-width (* hp 10)]
+        (let [hp-bar-width (* hp 5)]
         (love.graphics.rectangle :fill (- swarm.x (/ hp-bar-width 2)) (- swarm.y 10) hp-bar-width 5)
         )
       )

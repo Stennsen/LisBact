@@ -10,6 +10,10 @@
 ; (local CURRENT_COOLDOWN 0)
 ; (local TIME_BETWEEN_SPAWNS 5)
 
+(fn get-random-player-swarm [swarms]
+    (. swarms (love.math.random (length swarms)))
+)
+
 (fn new []
   "creates a new enemy manager with given parameters"
     (print "enemy-manager:new")
@@ -23,16 +27,18 @@
             (if (< (length state.enemies) state.enemy-management.max-enemies)
                 (do
                     (print "spawn new enemy")
-                    (let [new-enemy (swarm.new 10 10 (love.math.random 10 1200) (love.math.random 10 800) false true) ]
-                        (set new-state
-                            (merge state {
-                                :enemies (concat state.enemies [new-enemy])
-                                :enemy-management (merge state.enemy-management
-                                    {
-                                        :current-cooldown new-state.enemy-management.time-between-spawns
-                                    }
-                                )
-                            })
+                    (let [random-player-swarm (get-random-player-swarm state.swarms)]
+                        (let [new-enemy (swarm.set-target (swarm.new 10 10 (love.math.random 10 1200) (love.math.random 10 800) false true) random-player-swarm.x random-player-swarm.y)]
+                            (set new-state
+                                (merge state {
+                                    :enemies (concat state.enemies [new-enemy])
+                                    :enemy-management (merge state.enemy-management
+                                        {
+                                            :current-cooldown new-state.enemy-management.time-between-spawns
+                                        }
+                                    )
+                                })
+                            )
                         )
                     )
                 )
