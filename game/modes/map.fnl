@@ -13,6 +13,9 @@
 (local audioPlayer (require :core/audio-player))
 (local backgroundMusic (audioPlayer:newMusicPlayer "assets/audiofiles/background-music.flac"))
 
+(local controls (require :core/controls))
+(local c (controls:new))
+
 (local MOVE 120)
 
 (local MAP_SIZE 2000)
@@ -64,6 +67,7 @@
          (foreach swarm.postrender state.swarms)
          (if (not= tooltip_draw nil)
          (tooltip_draw.swarm.stats:draw (+ tooltip_draw.x 20) (+ tooltip_draw.y 20)))
+         (c.draw)
          (love.graphics.pop))
  :update (fn _update [state dt _set-mode]
            (background.update bg MAP_SIZE MAP_SIZE dt)
