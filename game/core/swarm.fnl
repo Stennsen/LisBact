@@ -141,8 +141,33 @@
     (lume.merge swarm { :x (body:getX) :y (body:getY) })
   ))
 
+(fn enemy-ai [state swarm dt]
+  (if swarm.is-enemy
+    (do
+      ; (print swarm.id)
+      (let [player-swarms state.swarms]
+        (if (> (length player-swarms) 0)
+          (let [first-player-swarm (. player-swarms 1)]
+            ; (print first-player-swarm.x)
+            (set-target swarm first-player-swarm.x first-player-swarm.y)
+            ; (print "test")
+          )
+          swarm
+        )
+      )
+    )
+    swarm
+  )
+)
+
+; (fn tick [state swarm dt]
+;   (let [swarm-after-ai (enemy-ai state swarm dt)]
+;     (update-position (move-to-target state swarm-after-ai dt))))
+
 (fn tick [state swarm dt]
-  (update-position (move-to-target state swarm dt)))
+  (let [swarm-after-ai (enemy-ai state swarm dt)]
+    (update-position (move-to-target state swarm-after-ai dt)))
+  )
 
 (fn check-mouse-in [state swarm mouse-x mouse-y]
   "takes a swarm and x/y coordinates of a point to be checked against"

@@ -6,7 +6,7 @@
 (local enemy-manager (require-mod! :core.enemy-manager))
 
 (local {: merge} (require :lib.lume))
-(local {: pprint : map : foreach : unpack} (require :core.utils))
+(local {: pprint : map : foreach : unpack : find} (require :core.utils))
 (local background (require-mod! :core.background))
 (local camera (require-mod! :core.camera))
 
@@ -16,6 +16,9 @@
 
 (local controls (require :core/controls))
 (local c (controls:new))
+
+(local regenerationmanager (require :core/regeneration-manager))
+(local regManager (regenerationmanager:new))
 
 (local MOVE 120)
 
@@ -49,14 +52,52 @@
 
 (fn filter-contact [contact]
   (let [(fixture1 fixture2) (contact:getFixtures)
-        { :type type1 } (fixture1:getUserData)
-        { :type type2 } (fixture2:getUserData)]
+        { :type type1 :is-enemy en1 } (fixture1:getUserData)
+        { :type type2 :is-enemy en2 } (fixture2:getUserData)]
     (if (and 
+      (~= en1 en2)
       (= type1 :swarm)
       (= type2 :swarm)) contact nil)))
 
-(fn handle-contacts [state contacts] 
-  (let [relevant-contacts (map filter-contact contacts)] state))
+(fn get-by-id [state id is-enemy] 
+  (if is-enemy 
+    (find (fn [sw] (= sw.id id)) state.enemies) 
+    (find (fn [sw] (= sw.id id)) state.swarms)))
+
+(fn update-when-id [swarm id updater]
+  (if (= swarm.id id) (updater swarm) swarm))
+
+(fn update-own [state id updater] (merge state { 
+  :swarms (map (fn [sw] (update-when-id sw id updater)) state.swarms) }))
+
+(fn update-enemy [state id updater] (merge state { 
+  :enemies (map (fn [sw] (update-when-id sw id updater)) state.enemies) }))
+
+(fn update-swarm [state id is-enemy updater]
+  (if is-enemy (update-enemy state id updater) (update-own state id updater)))
+
+(fn make-combat-updater [opponent dt]
+  (fn [sw] 
+    (let [atk (opponent.stats:getAttack) 
+          oldHealth (sw.stats:getHealth)
+          newHealth (- oldHealth (* atk dt))]
+    (sw.stats:setHealth newHealth) 
+    sw))
+)
+
+(fn handle-contact [state contact dt] 
+  (let [(fixture1 fixture2) (contact:getFixtures)
+        ud1 (fixture1:getUserData)
+        ud2 (fixture2:getUserData)
+        sw1 (get-by-id state ud1.id ud1.is-enemy)
+        sw2 (get-by-id state ud2.id ud2.is-enemy)
+        state (update-swarm state ud1.id ud1.is-enemy (make-combat-updater sw2 dt))
+        state (update-swarm state ud2.id ud2.is-enemy (make-combat-updater sw1 dt))] 
+        state))
+
+(fn handle-contacts [state contacts dt] 
+  (let [relevant-contacts (map filter-contact contacts)]
+    (accumulate [st state _i contact (ipairs relevant-contacts)] (handle-contact st contact dt))))
 
 {:activate (fn _activate []
              ;; only called called once. Useful for loading in large assets
@@ -84,8 +125,9 @@
  :update (fn _update [state dt _set-mode]
            (background.update bg MAP_SIZE MAP_SIZE dt)
            (state.physics.update dt)
+           (regManager:tick state.swarms dt)
            (let [contacts (state.physics.get-contacts)
-                 state (enemy-manager.update (handle-contacts contacts state) dt)]
+                 state (enemy-manager.update (handle-contacts state contacts dt) dt)]
                (merge state {:camera (camera.update state.camera MAP dt)
                        :swarms (map (fn [sw] (swarm.tick state sw dt))
                                     state.swarms)
