@@ -62,7 +62,7 @@
   (if (has-reached-target? swarm)
     (let [m (unset (lume.merge swarm { :x swarm.target-x :y swarm.target-y }) :target-x :target-y)] m)
     (if (and (not= swarm.target-x nil) (not= swarm.target-y nil))
-        (let [speed 50
+        (let [speed (* (swarm.stats:getSpeed) 10)
             source [(. swarm :x) (. swarm :y)]
             target [swarm.target-x swarm.target-y]
             vec [(- (car target) (car source)) (- (cdr target) (cdr source))]
