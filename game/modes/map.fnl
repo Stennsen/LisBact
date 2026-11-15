@@ -10,7 +10,6 @@
 (local background (require-mod! :core.background))
 (local camera (require-mod! :core.camera))
 
-
 (local MOVE 120)
 
 (local MAP_SIZE 2000)
@@ -63,13 +62,13 @@
            (background.update bg MAP_SIZE MAP_SIZE dt)
           ;  (print state.enemy-management.active-enemies)
           ; (set state (state.enemy-manager.update state))
-          (let [state (enemy-manager.update state dt)]
-           (merge state 
+          ;;(foreach (fn [sw] (pprint sw.fixture)) state.swarms)
+          (merge state 
                   { :camera (camera.update state.camera MAP dt)
                     :swarms (icollect [_ sw (ipairs state.swarms)]
-                             (swarm.tick state.swarms sw dt))
+                             (swarm.tick state sw dt))
                     :enemies state.enemies
-                             }))
+                             })
           )
  : keyreleased 
  : keypressed
@@ -80,7 +79,7 @@
                     (case button
                       1 (merge state
                             {:swarms (map (fn [sw]
-                                            (swarm.check-mouse-in sw x y))
+                                            (swarm.check-mouse-in state sw x y))
                                           state.swarms)})
                       2 (merge state
                             {:swarms (map (fn [sw]
