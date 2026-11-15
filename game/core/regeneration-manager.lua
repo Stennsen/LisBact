@@ -4,7 +4,7 @@ Regenerationmanager.__index = Regenerationmanager
 function Regenerationmanager:new ()
   local manager = setmetatable({}, self)
 
-  manager.cooldownPerSwarm = 5
+  manager.cooldownPerSwarm = 15
   manager.swarmCooldownMap = {}
 
   return manager
