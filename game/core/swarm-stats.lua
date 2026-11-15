@@ -16,11 +16,11 @@ globalDrawPositionOffset = 10
 function SwarmStats:new ()
   local swarmStats = setmetatable({}, self)
 
-  swarmStats.attack = SwarmStat:new(math.random(1,2),5,attack)
-  swarmStats.defence = SwarmStat:new(math.random(1,2),5,defence)
-  swarmStats.speed = SwarmStat:new(math.random(1,2),5,speed)
-  swarmStats.unitCount = SwarmStat:new(math.random(1,3),5,count)
-  swarmStats.health = SwarmStat:new(5,5,health)
+  swarmStats.attack = SwarmStat:new(math.random(1,2),10,attack)
+  swarmStats.defence = SwarmStat:new(math.random(1,2),10,defence)
+  swarmStats.speed = SwarmStat:new(math.random(1,2),10,speed)
+  swarmStats.unitCount = SwarmStat:new(math.random(4,5),10,count)
+  swarmStats.health = SwarmStat:new(10,10,health)
 
   swarmStats.drawnStats = {
     swarmStats.attack,
@@ -43,6 +43,10 @@ end
 
 function SwarmStats:getHealth()
     return self.health:getAmount()
+end
+
+function SwarmStats:getMaxHealth()
+    return self.health:getMaxAmount()
 end
 
 function SwarmStats:setHealth(newHealth)

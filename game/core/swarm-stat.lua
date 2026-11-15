@@ -19,6 +19,10 @@ function SwarmStat:getAmount()
     return self.amount
 end
 
+function SwarmStat:getMaxAmount()
+    return self.maxAmount
+end
+
 function SwarmStat:setAmount(newAmount)
     if newAmount < 0 then 
         self.amount = 0 

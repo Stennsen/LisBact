@@ -34,15 +34,10 @@
         y (if (not y) 0 y)
         shape (collisions.new-circle id x y size)
         is-enemy (if (not is-enemy) false is-enemy)
-        stats (SwarmStats:new)]
-    {: id : size : x : y : is-selected : shape : stats : is-enemy
-      :cells [
-        (Cell:new size (random-color 1) (random-color ))
-        (Cell:new size (random-color 1) (random-color ))
-        (Cell:new size (random-color 1) (random-color ))
-        (Cell:new size (random-color 1) (random-color ))
-        ]
-    }
+        stats (SwarmStats:new)
+        cells (fcollect [_ 1 (stats:getUnitCount)]
+                (Cell:new size (random-color 1) (random-color)))]
+    {: id : size : x : y : is-selected : shape : stats : is-enemy : cells}
   )
 )
 
