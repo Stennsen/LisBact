@@ -80,7 +80,8 @@
   (fn [sw] 
     (let [atk (opponent.stats:getAttack) 
           oldHealth (sw.stats:getHealth)
-          newHealth (- oldHealth (* atk dt))]
+          effectiveAttack (math.max 0 (- atk (sw.stats:getDefence)))
+          newHealth (- oldHealth (* effectiveAttack dt))]
     (sw.stats:setHealth newHealth) 
     sw))
 )
