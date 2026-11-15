@@ -10,13 +10,16 @@
 (local physics (collisions))
 
 {:init (fn _init []
-        (let [list-enemies []]
-         {:time 0
-          :swarms [(swarm.set-target (swarm.new physics 1 32 300 300 false) 300 400)
-                   (swarm.set-target (swarm.new physics 2 32 400 300 false) 400 400)]
-          :camera { :x 0 :y 0 :mx 0 :my 0 }
-          : physics
-          :enemies list-enemies
-          :enemy-management { :max-enemies 20 :current-cooldown 1 :time-between-spawns 0.5}
-          :world-power-up-manager (world-power-up-manager:new 6)
-          }))}
+         (let [list-enemies []]
+           {:time 0
+            :swarms [(swarm.set-target (swarm.new physics 1 32 300 300 false)
+                                       300 400)
+                     (swarm.set-target (swarm.new physics 2 32 400 300 false)
+                                       400 400)]
+            :camera {:x 0 :y 0 :mx 0 :my 0}
+            : physics
+            :enemies list-enemies
+            :enemy-management {:max-enemies 20
+                               :current-cooldown 1
+                               :time-between-spawns 0.5}
+            :world-power-up-manager (world-power-up-manager:new 6)}))}
