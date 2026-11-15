@@ -17,6 +17,9 @@
 (local controls (require :core/controls))
 (local c (controls:new))
 
+(local regenerationmanager (require :core/regeneration-manager))
+(local regManager (regenerationmanager:new))
+
 (local MOVE 120)
 
 (local MAP_SIZE 2000)
@@ -47,6 +50,17 @@
 (fn mousemoved [state _x _y _dx _dy _set-mode]
   state)
 
+(fn filter-contact [contact]
+  (let [(fixture1 fixture2) (contact:getFixtures)
+        { :type type1 } (fixture1:getUserData)
+        { :type type2 } (fixture2:getUserData)]
+    (if (and 
+      (= type1 :swarm)
+      (= type2 :swarm)) contact nil)))
+
+(fn handle-contacts [state contacts] 
+  (let [relevant-contacts (map filter-contact contacts)] state))
+
 {:activate (fn _activate []
              ;; only called called once. Useful for loading in large assets
              ;; like images and music
@@ -73,8 +87,9 @@
  :update (fn _update [state dt _set-mode]
            (background.update bg MAP_SIZE MAP_SIZE dt)
            (state.physics.update dt)
-           (let [state (enemy-manager.update state dt)
-                _ (print (length state.enemies))]
+           (regManager:tick state.swarms dt)
+           (let [contacts (state.physics.get-contacts)
+                 state (enemy-manager.update (handle-contacts state contacts) dt)]
                (merge state {:camera (camera.update state.camera MAP dt)
                        :swarms (map (fn [sw] (swarm.tick state sw dt))
                                     state.swarms)

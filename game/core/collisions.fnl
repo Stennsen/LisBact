@@ -6,15 +6,20 @@
 
 (fn []
   (let [world (love.physics.newWorld 0 0 true)]
-    (fn new-circle [id x y size]
+    (fn new-circle [id is-enemy x y size]
       (let [circle (love.physics.newCircleShape size)
-            body (love.physics.newBody world x y :dynamic)]
-        (love.physics.newFixture body circle)))
+            body (love.physics.newBody world x y :dynamic)
+            fixture (love.physics.newFixture body circle)]
+        (fixture:setUserData { :type :swarm :id id :is-enemy is-enemy })
+        fixture))
 
     (fn create-collider [x y w h]
       (let [shape (love.physics.newEdgeShape x y (+ x w) (+ y h))
-            body (love.physics.newBody world x y :static)]
-        (love.physics.newFixture body shape)))
+            body (love.physics.newBody world x y :static)
+            fixture (love.physics.newFixture body shape)]
+          (fixture:setUserData { :type :collider })
+          fixture
+        ))
 
     (fn add-map-colliders [{: min-x : min-y : max-x : max-y}]
       (let [xsize (- max-x min-x)
@@ -28,4 +33,6 @@
 
     (fn update [dt] (world:update dt))
 
-    {: new-circle : in-fixture : add-map-colliders : update}))
+    (fn get-contacts [] (world:getContacts))
+
+    {: new-circle : in-fixture : add-map-colliders : update : get-contacts }))
