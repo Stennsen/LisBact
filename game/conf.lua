@@ -1,6 +1,16 @@
+json = require "lib.json"
+
+local conf_json = io.open("conf.json", "r"):read("a")
+local conf = {}
+if conf_json then
+   conf = json.decode(conf_json)
+else
+   error("No conf.json found")
+end
+
 love.conf = function(t)
-   t.title, t.identity = "change-me", "Minimal"
-   t.version = "11.5"
+   t.title, t.identity = conf.title, "Minimal"
+   t.version = conf.loveVersion
    t.modules.joystick = false
    t.modules.physics = false
    t.window.width = 1200
