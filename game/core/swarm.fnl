@@ -5,6 +5,7 @@
 ;   :y number
 ;   :target-x number|nil
 ;   :target-y number|nil
+;   :is-hovered boolean
 ;   :is-selected boolean
 ;   :fixture Fixture
 ;   :update dt
@@ -33,15 +34,16 @@
         y (if (not y) 0 y)
         fixture (physics.new-circle id x y size)
         is-enemy (if (not is-enemy) false is-enemy)
-        stats (SwarmStats:new)
+        stats (SwarmStats:new is-enemy)
         cells (fcollect [_ 1 (stats:getUnitCount)]
-                (Cell:new size (random-color 1) (random-color)))]
-    {: id : size : x : y : is-selected : fixture : stats : is-enemy : cells}
+                (Cell:new size (random-color 1) (random-color)))
+        is-hovered false]
+    {: id : size : x : y : is-hovered : is-selected : fixture : stats : is-enemy : cells}
   )
 )
 
 (fn render [swarm]
-  (if (and swarm.target-x swarm.target-y)
+  (if (and (and swarm.target-x swarm.target-y (not swarm.is-enemy)))
       (target-marker.render swarm.target-x swarm.target-y))
   (if swarm.is-enemy
     (do
@@ -49,11 +51,12 @@
        (love.graphics.setColor 0 0 0)
         (love.graphics.circle :fill swarm.x swarm.y swarm.size)
       )
-      (love.graphics.setColor 0 1 0)
-      (let [hp (swarm.stats:getHealth)]
-        (let [hp-bar-width (* hp 10)]
-        (love.graphics.rectangle :fill (- swarm.x (/ hp-bar-width 2)) (- swarm.y 10) hp-bar-width 5)
-        )
+      (let [hp-max-bar-width (* (swarm.stats:getMaxHealth) 5)
+            hp-curr-bar-width (* (swarm.stats:getHealth) 5)]
+        (love.graphics.setColor 1 0 0)
+        (love.graphics.rectangle :fill (- swarm.x (/ hp-max-bar-width 2)) (- swarm.y 10) hp-max-bar-width 5)
+        (love.graphics.setColor 0 1 0)
+        (love.graphics.rectangle :fill (- swarm.x (/ hp-curr-bar-width 2)) (- swarm.y 10) hp-curr-bar-width 5)
       )
     )
     (do
@@ -61,9 +64,14 @@
       (do
         (love.graphics.setColor 1 0 1)
         (love.graphics.circle :fill swarm.x swarm.y swarm.size)
+        ) swarm.is-hovered
+      (do
+        (love.graphics.setColor 0 1 0 0.5)
+        (love.graphics.circle :fill swarm.x swarm.y swarm.size)
         )
       )
     )
+    
   )
   (love.graphics.setColor 1 1 1)
   (love.graphics.circle :line swarm.x swarm.y swarm.size)
@@ -132,4 +140,6 @@
   "takes a swarm and x/y coordinates of a point to be checked against"
   (lume.merge swarm {:is-selected (state.physics.in-fixture swarm.fixture mouse-x mouse-y)}))
 
-{: new : render : tick : set-target : check-mouse-in : postrender }
+(fn is-in [state swarm mouse-x mouse-y] (state.physics.in-fixture swarm.fixture mouse-x mouse-y))
+
+{: new : render : tick : set-target : check-mouse-in : postrender : is-in }

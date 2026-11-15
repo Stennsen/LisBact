@@ -10,6 +10,9 @@
 (local background (require-mod! :core.background))
 (local camera (require-mod! :core.camera))
 
+(local audioPlayer (require :core/audio-player))
+(local backgroundMusic (audioPlayer:newMusicPlayer "assets/audiofiles/background-music.flac"))
+
 (local MOVE 120)
 
 (local MAP_SIZE 2000)
@@ -47,13 +50,14 @@
              ;; only called called once. Useful for loading in large assets
              ;; like images and music
              (love.graphics.setNewFont 30))
- :enter (fn _enter [state] state)
- :leave (fn _leave [state] state)
+ :enter (fn _enter [state] (backgroundMusic:play) state)
+ :leave (fn _leave [state] (backgroundMusic:stop) state)
  :draw (fn _draw [state]
          (background.predraw bg)
          (love.graphics.push)
          (love.graphics.applyTransform (camera.get-transform state.camera))
          (background.draw bg)
+         (state.world-power-up-manager:draw)
          (foreach swarm.render state.swarms)
          (foreach swarm.render state.enemies)
          (foreach swarm.postrender state.swarms)
@@ -72,7 +76,14 @@
           )
  : keyreleased 
  : keypressed
- : mousemoved
+ :mousemoved (fn [state x y dx dy _] 
+            (print x y)
+            (merge state 
+              {:swarms (map (fn [sw] 
+              (set sw.is-hovered (swarm.is-in state sw x y))) state.swarms
+            )}) 
+            state
+ )
  :mousepressed (fn [state sx sy button _is-touch _presses _set-mode]
                   (let [tf (camera.get-transform state.camera)
                         (x y) (tf:inverseTransformPoint sx sy)]
