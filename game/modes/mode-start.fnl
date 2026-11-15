@@ -2,6 +2,11 @@
 
 (import-macros {: incf} :sample-macros)
 
+(import-macros {: init-require!} :mod)
+(local require-mod! (init-require! :modes.mode-game))
+
+(local background (require-mod! :core.background))
+
 (local set-mode :set-mode)
 
 (local lume (require :lib.lume))
@@ -10,6 +15,10 @@
 
 (local big-font (love.graphics.setNewFont 48))
 (local small-font (love.graphics.setNewFont 16))
+
+(local bg (background.new 1600 900))
+(love.graphics.setDefaultFilter :nearest)
+(local logo (love.graphics.newImage "assets/logo.png"))
 
 (var title-offset-x 0)
 
@@ -23,19 +32,20 @@
  :leave (fn _leave [state] state)
  :draw (fn _draw [state]
          (let [[w h] [(love.window.getMode)]]
+           (background.predraw bg)
+           (background.draw bg)
+           (love.graphics.setColor 0 0 0)
            (love.graphics.setFont big-font)
-           (love.graphics.print "(Klammer Schwarm)"
-                                (+ (+ (/ w 2) title-offset-x) -200) 150)
+                                (love.graphics.setColor 1 1 1)
+                                
+          (love.graphics.draw logo
+                                (+ (/ w 8) 150 (* (math.sin (love.timer.getTime)) 100)) 0
+                                0 2 2)
            (love.graphics.setFont small-font)
-           (love.graphics.print "Pressy SPACE to start!" 200 250)))
+           (love.graphics.print "Pressy SPACE to start!" (+ (/ w 3) (* (math.cos (love.timer.getTime)) 100)) 550)))
  :update (fn _update [state dt _set-mode]
-           (local new-time (+ state.time dt)) ;  (set title-offset-x (* (* (math.sin (love.timer.getTime) 5) 20)))
-           (set title-offset-x (* (math.sin (* (love.timer.getTime) 5)) 20))
-           (if (< countdown-time new-time)
-               (do
-                 (love.event.quit)
-                 (lume.merge state {:time 0}))
-               (lume.merge state {:time new-time})))
+           (background.update bg 1600 900 dt)
+           state)
  :keyreleased (fn _keyreleased [state _key _code _is-repeat _set-mode] state)
  :keypressed (fn _keypressed [state key _code _is-repeat set-mode]
                (if (= key :space)
