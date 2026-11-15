@@ -7,7 +7,7 @@ attack = love.graphics.newImage("assets/icons/attack_r_64.png")
 defence = love.graphics.newImage("assets/icons/defence_b_64.png")
 count = love.graphics.newImage("assets/icons/count_y_64.png")
 speed = love.graphics.newImage("assets/icons/speed_g_64.png")
-icon_health = love.graphics.newImage("assets/icons/health_r_64.png")
+health = love.graphics.newImage("assets/icons/health_r_64.png")
 
 borderToWindow = 10
 gabBetweenIconAndStat = 10
@@ -16,25 +16,18 @@ globalDrawPositionOffset = 10
 function SwarmStats:new ()
   local swarmStats = setmetatable({}, self)
 
-  swarmStats.attack = SwarmStat:new(2,5,attack)
-  swarmStats.defence = SwarmStat:new(2,5,defence)
-  swarmStats.speed = SwarmStat:new(2,5,speed)
-  swarmStats.unitCount = SwarmStat:new(2,5,count)
-  swarmStats.health = SwarmStat:new(2,5, icon_health)
-
-  swarmStats.allStats = {
-    swarmStats.attack,
-    swarmStats.defence,
-    swarmStats.speed,
-    swarmStats.unitCount,
-    swarmStats.health
-  }
+  swarmStats.attack = SwarmStat:new(math.random(1,2),5,attack)
+  swarmStats.defence = SwarmStat:new(math.random(1,2),5,defence)
+  swarmStats.speed = SwarmStat:new(math.random(1,2),5,speed)
+  swarmStats.unitCount = SwarmStat:new(math.random(1,3),5,count)
+  swarmStats.health = SwarmStat:new(5,5,health)
 
   swarmStats.drawnStats = {
     swarmStats.attack,
     swarmStats.defence,
     swarmStats.speed,
-    swarmStats.unitCount
+    swarmStats.unitCount,
+    swarmStats.health
   }
 
   return swarmStats
@@ -100,8 +93,8 @@ function SwarmStats:draw(x, y)
 
     local i = 0
     for index,stat in ipairs(self.drawnStats) do
-        local xPos = x + borderToWindow
-        local yPos = y + borderToWindow + (i * stat.icon:getHeight())
+        local xPos = x + (borderToWindow * 2)
+        local yPos = y + (borderToWindow * 2) + (i * stat.icon:getHeight())
         love.graphics.draw(stat.icon, xPos, yPos)
         stat:draw(xPos + stat.icon:getWidth() + gabBetweenIconAndStat, 
                     yPos + (stat.icon:getHeight() / 2))
