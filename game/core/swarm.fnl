@@ -5,6 +5,7 @@
 ;   :y number
 ;   :target-x number|nil
 ;   :target-y number|nil
+;   :is-hovered boolean
 ;   :is-selected boolean
 ;   :shape Shape
 ;   :update dt
@@ -34,8 +35,10 @@
         y (if (not y) 0 y)
         shape (collisions.new-circle id x y size)
         is-enemy (if (not is-enemy) false is-enemy)
-        stats (SwarmStats:new)]
-    {: id : size : x : y : is-selected : shape : stats : is-enemy
+        stats (SwarmStats:new)
+        is_hovered false
+        ]
+    {: id : size : x : y : is_hovered : is-selected : shape : stats : is-enemy
       :cells [
         (Cell:new size (random-color 1) (random-color ))
         (Cell:new size (random-color 1) (random-color ))
@@ -61,9 +64,14 @@
       (do
         (love.graphics.setColor 1 0 1)
         (love.graphics.circle :fill swarm.x swarm.y swarm.size)
+        ) swarm.is-hovered
+      (do
+        (love.graphics.setColor 1 1 1 0.5)
+        (love.graphics.circle :fill swarm.x swarm.y swarm.size)
         )
       )
     )
+    
   )
   (love.graphics.setColor 1 1 1)
   (love.graphics.circle :line swarm.x swarm.y swarm.size)
