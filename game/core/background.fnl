@@ -54,8 +54,8 @@
 (fn new [w h background_cell_count background_color background_cell_color blur_shader_radius background_cell_speed]
   "creates a new background with given parameters"
   (let [background_cell_count (if (not background_cell_count) 100 background_cell_count)
-        background_color (if (not background_color) [(love.math.colorFromBytes 235 245 151)] background_color)
-        background_cell_color (if (not background_cell_color) [(love.math.colorFromBytes 195 233 150)] background_cell_color)
+        background_color (if (not background_color) [(love.math.colorFromBytes 206 241 255)] background_color)
+        background_cell_color (if (not background_cell_color) [(love.math.colorFromBytes 160 219 255)] background_cell_color)
         blur_shader_radius (if (not blur_shader_radius) 16 blur_shader_radius)
         background_cell_speed (if (not background_cell_speed) 20 background_cell_speed)
         mainCanvas (love.graphics.newCanvas w h)

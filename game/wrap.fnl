@@ -34,7 +34,7 @@
   `(when (~= :Web (love.system.getOS)) ,expr))
 
 (fn set-mode [new-mode-name ...]
-  (print new-mode-name)
+  ; (print new-mode-name)
   (if state-mode (set-state ((. state-mode :leave) state-state)))
   (let [mode (require (mode-name new-mode-name))]
     (when (not (. activated-modes new-mode-name))
@@ -80,7 +80,11 @@
     "i" (reset-error)))
 
 (fn love.load [_args]
-  (set-mode initial-state-mode-name)
+  (var mode-to-set initial-state-mode-name)
+  (if (> (length _args) 0) 
+    (set mode-to-set (. _args 1))
+  )
+  (set-mode mode-to-set)
   ;; the nearest filter allows you to get sharp pixel-art style scaling;
   ;; if you want perfect pixel alignment you can draw to canvas and
   ;; then draw that canvas scaled

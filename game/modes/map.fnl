@@ -55,6 +55,7 @@
          (love.graphics.applyTransform (camera.get-transform state.camera))
          (background.draw bg)
          (foreach swarm.render state.swarms)
+         (foreach swarm.render state.enemies)
          (foreach swarm.postrender state.swarms)
          (love.graphics.pop))
  :update (fn _update [state dt _set-mode]
@@ -62,7 +63,9 @@
            (merge state
                   { :camera (camera.update state.camera MAP dt)
                     :swarms (icollect [_ sw (ipairs state.swarms)]
-                             (swarm.tick state.swarms sw dt))}))
+                             (swarm.tick state.swarms sw dt))
+                    :enemies state.enemies
+                             }))
  : keyreleased 
  : keypressed
  : mousemoved
