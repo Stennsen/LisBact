@@ -34,7 +34,7 @@
   "creates a new swarm with given parameters"
   (let [x (if (not x) 0 x)
         y (if (not y) 0 y)
-        fixture (physics.new-circle id x y size)
+        fixture (physics.new-circle id is-enemy x y size)
         is-enemy (if (not is-enemy) false is-enemy)
         stats (SwarmStats:new is-enemy)
         cells (fcollect [_ 1 (stats:getUnitCount)]
