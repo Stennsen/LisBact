@@ -17,6 +17,9 @@
 (local controls (require :core/controls))
 (local c (controls:new))
 
+(local regenerationmanager (require :core/regeneration-manager))
+(local regManager (regenerationmanager:new))
+
 (local MOVE 120)
 
 (local MAP_SIZE 2000)
@@ -84,6 +87,7 @@
  :update (fn _update [state dt _set-mode]
            (background.update bg MAP_SIZE MAP_SIZE dt)
            (state.physics.update dt)
+           (regManager:tick state.swarms dt)
            (let [contacts (state.physics.get-contacts)
                  state (enemy-manager.update (handle-contacts state contacts) dt)]
                (merge state {:camera (camera.update state.camera MAP dt)
